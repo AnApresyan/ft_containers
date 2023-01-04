@@ -20,9 +20,6 @@ namespace ft
 
 			//Capacity
 			size_type size() const;
-			
-
-
 
 		private: 
 			size_type _size;
