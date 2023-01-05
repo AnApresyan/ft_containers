@@ -5,6 +5,13 @@
 
 namespace ft
 {
+
+	struct input_iterator_tag {};
+	struct output_iterator_tag {};
+	struct forward_iterator_tag {};
+	struct bidirectional_iterator_tag {};
+	struct random_access_iterator_tag {};
+
 	template <class Iterator> 
 	struct iterator_traits
 	{
@@ -23,7 +30,7 @@ namespace ft
 		typedef T								value_type;
 		typedef T* 								pointer;
 		typedef T& 								reference;
-		typedef std::random_access_iterator_tag	iterator_category;
+		typedef ft::random_access_iterator_tag	iterator_category;
 	};
 
 
@@ -34,8 +41,18 @@ namespace ft
 		typedef T								value_type;
 		typedef const T* 						pointer;
 		typedef const T& 						reference;
-		typedef std::random_access_iterator_tag	iterator_category;
+		typedef ft::random_access_iterator_tag	iterator_category;
 	};
+
+	template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
+	struct iterator {
+		typedef T         value_type;
+		typedef Distance  difference_type;
+		typedef Pointer   pointer;
+		typedef Reference reference;
+		typedef Category  iterator_category;
+	};
+
 
 	template <class Iterator> 
 	class reverse_iterator
@@ -135,7 +152,7 @@ namespace ft
 	template <class Iterator>
 	bool operator<=(const ft::reverse_iterator<Iterator>& lhs,const ft::reverse_iterator<Iterator>& rhs)
 	{
-		return (lhs.base() >= rhs.base());
+		return (lhs.base() >= rhs.base());	
 	}
 	template <class Iterator>
 	bool operator>=(const ft::reverse_iterator<Iterator>& lhs,const ft::reverse_iterator<Iterator>& rhs)
@@ -148,7 +165,7 @@ namespace ft
 		return (rev_it + n);
 	}
 	template <class Iterator>
-	reverse_iterator<Iterator> operator-(typename ft::reverse_iterator<Iterator>::difference_type n,const ft::reverse_iterator<Iterator>& rev_it)
+	reverse_iterator<Iterator> operator-	(typename ft::reverse_iterator<Iterator>::difference_type n,const ft::reverse_iterator<Iterator>& rev_it)
 	{
 		return (rev_it - n);
 	}
