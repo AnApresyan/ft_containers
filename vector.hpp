@@ -6,6 +6,7 @@
 #include "random_access_iterator.hpp"
 #include <memory>
 #include <iostream>
+#include "type_traits.hpp"
 
 namespace ft 
 {
@@ -52,13 +53,13 @@ namespace ft
 
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-					typename std::enable_if<!is_integral<InputIterator>::value, bool>::type): _alloc(alloc), _size(ft::distance(first, last))
+					typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type): _alloc(alloc), _size(ft::distance(first, last))
 			{
 				try 
 				{
-					_arr = m_alloc.allocate(_size);
+					_arr = _alloc.allocate(_size);
 					for (size_type i = 0; first != last; ++first, ++i)
-						m_alloc.construct(_arr + i, *first);
+						_alloc.construct(_arr + i, *first);
 				} 
 				catch (const std::bad_alloc& e) 
 				{
@@ -215,12 +216,12 @@ namespace ft
 				return _arr[_size - 1];
 			}
 
-			value_type* data() noexcept
+			value_type* data()
 			{
 				return _arr;
 			}
 
-			const value_type* data() const noexcept
+			const value_type* data() const
 			{
 				return _arr;
 			}
