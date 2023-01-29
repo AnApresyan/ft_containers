@@ -1,7 +1,7 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
-#include <iterator>
+#include <stddef.h>
 
 namespace ft
 {
@@ -26,7 +26,7 @@ namespace ft
 	template <class T> 
 	struct iterator_traits<T*>
 	{
-		typedef std::ptrdiff_t					difference_type;
+		typedef ptrdiff_t						difference_type;
 		typedef T								value_type;
 		typedef T* 								pointer;
 		typedef T& 								reference;
@@ -37,7 +37,7 @@ namespace ft
 	template <class T> 
 	struct iterator_traits<const T*>
 	{
-		typedef std::ptrdiff_t					difference_type;
+		typedef ptrdiff_t						difference_type;
 		typedef T								value_type;
 		typedef const T* 						pointer;
 		typedef const T& 						reference;
@@ -70,7 +70,7 @@ namespace ft
 			reverse_iterator(): _base() {}
 			explicit reverse_iterator (iterator_type it): _base(it) {}
 			template <class Iter>  
-			reverse_iterator (const ft::reverse_iterator<Iter>& rev_it): _base(rev_it._base);
+			reverse_iterator (const ft::reverse_iterator<Iter>& rev_it): _base(rev_it._base) {};
 
 			iterator_type base() const
 			{
@@ -82,7 +82,7 @@ namespace ft
 			}
 			reverse_iterator operator+(difference_type n) const
 			{
-				return ft::reverse_iterator(_base - n);
+				return ft::reverse_iterator<Iterator>(_base - n);
 			}
 			reverse_iterator& operator++()
 			{
@@ -91,7 +91,7 @@ namespace ft
 			}
 			reverse_iterator  operator++(int)
 			{
-				ft::reverse_iterator temp = *this;
+				ft::reverse_iterator<Iterator> temp = *this;
   				++(*this);
   				return temp;
 			}
@@ -102,7 +102,7 @@ namespace ft
 			}
 			reverse_iterator operator-(difference_type n) const
 			{
-				return ft::reverse_iterator(_base + n);
+				return ft::reverse_iterator<Iterator>(_base + n);
 			}
 			reverse_iterator& operator--()
 			{
@@ -111,7 +111,7 @@ namespace ft
 			}
 			reverse_iterator  operator--(int)
 			{
-				ft::reverse_iterator temp = *this;
+				ft::reverse_iterator<Iterator> temp = *this;
   				--(*this);
   				return temp;
 			}

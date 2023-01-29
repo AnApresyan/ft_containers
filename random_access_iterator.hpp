@@ -8,8 +8,6 @@ namespace ft
 	template <typename T> 
 	class random_access_iterator : public ft::iterator<ft::random_access_iterator_tag, T>
 	{
-		protected:
-			pointer ptr;
 		public:
 			typedef ft::iterator<ft::random_access_iterator_tag, T> it;
 			typedef typename it::difference_type 					difference_type;
@@ -20,7 +18,7 @@ namespace ft
 
 			random_access_iterator(): ptr() {}
 			random_access_iterator(random_access_iterator const &other): ptr(other.ptr) {}
-			random_access_iterator(pointer other): ptr(other) {}							//Do I need this? If not what is the point of rai?
+			random_access_iterator(pointer p): ptr(p) {}							//Do I need this? If not what is the point of rai?
 			virtual ~random_access_iterator() {}
 
 			random_access_iterator &operator=(random_access_iterator const &other)
@@ -46,7 +44,7 @@ namespace ft
 
 			random_access_iterator operator+(difference_type n) const
 			{
-				return ft::random_access_iterator(ptr + n);
+				return ft::random_access_iterator<T>(ptr + n);
 			}
 			random_access_iterator& operator++()
 			{
@@ -55,7 +53,7 @@ namespace ft
 			}
 			random_access_iterator  operator++(int)
 			{
-				ft::random_access_iterator temp = *this;
+				ft::random_access_iterator<T> temp = *this;
   				++(*this);
   				return temp;
 			}
@@ -66,17 +64,20 @@ namespace ft
 			}
 			random_access_iterator operator-(difference_type n) const
 			{
-				return ft::random_access_iterator(_base + n);
+				// iterator tmp(*this);
+				// tmp.ptr += n;
+				return ft::random_access_iterator<T>(ptr - n);
 			}
 			random_access_iterator& operator--()
 			{
-				ptr++;
+
+				ptr--;
 				return (*this);
 			}
 			random_access_iterator  operator--(int)
 			{
-				ft::random_access_iterator temp = *this;
-  				++(*this);
+				ft::random_access_iterator<T> temp = *this;
+  				--(*this);
   				return temp;
 			}
 			random_access_iterator& operator-=(difference_type n)
@@ -87,8 +88,11 @@ namespace ft
 
 			reference operator[](difference_type n) const
 			{
-				return (ptr + n);
+				return (ptr[n]);
 			}
+
+		protected:
+			pointer ptr;
 	};
 	template <typename T>  
 	bool operator==(const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<T>& rhs)
@@ -96,7 +100,7 @@ namespace ft
 		return (lhs.ptr == rhs.ptr);
 	}
 	template <typename T>
-	bool operator!= (const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<T>& rhs)
+	bool operator!=(const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<T>& rhs)
 	{
 		return (lhs.ptr != rhs.ptr);
 	}
