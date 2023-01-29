@@ -52,15 +52,16 @@ namespace ft
 
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-					typename std::enable_if<!is_integral<InputIterator>::value, bool>::type)
-				: _alloc(alloc), _size(ft::distance(first, last))
+					typename std::enable_if<!is_integral<InputIterator>::value, bool>::type): _alloc(alloc), _size(ft::distance(first, last))
 			{
-				try {
+				try 
+				{
 					_arr = m_alloc.allocate(_size);
-					for (size_type i = 0; first != last; ++first, ++i) {
+					for (size_type i = 0; first != last; ++first, ++i)
 						m_alloc.construct(_arr + i, *first);
-					}
-				} catch (const std::bad_alloc& e) {
+				} 
+				catch (const std::bad_alloc& e) 
+				{
 					this->clear();
 					this->_alloc.deallocate(this->_arr, n);
 					throw e;
@@ -117,16 +118,12 @@ namespace ft
 				size_type tmp = _size;
 				
 				if (n < _size)
-				{
 					for (size_type i = n; i < tmp; i++)
 						pop_back();
-				}
 				if (n > _size)
-				{
 					while (n > _capacity)
 						reserve(2 * _capacity);
 					insert(iterator(end()), n - _size, val);
-				}
 			}
 
 			size_type capacity() const
@@ -298,7 +295,8 @@ namespace ft
 			iterator erase(iterator first, iterator last)
 			{
 				iterator it = first;
-				while (last != this->end()) {
+				while (last != this->end()) 
+				{
 					*it = *last;
 					it++;
 					last++;
@@ -319,16 +317,16 @@ namespace ft
 			allocator_type	_alloc;
 
 	};
+
 	template <typename InputIterator>
 	typename std::iterator_traits<InputIterator>::difference_type
 	distance(InputIterator first, InputIterator last)
 	{
 		typename std::iterator_traits<InputIterator>::difference_type n = 0;
-		for (; first != last; ++first) {
+		for (; first != last; ++first)
 			++n;
-		}
 		return n;
 	}
-	};
+};
 
 #endif
