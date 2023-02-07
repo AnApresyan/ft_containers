@@ -6,10 +6,10 @@
 namespace ft
 {
 	template <typename T> 
-	class random_access_iterator : public ft::iterator<ft::random_access_iterator_tag, T>
+	class random_access_iterator : public ft::iterator<std::random_access_iterator_tag, T>
 	{
 		public:
-			typedef ft::iterator<ft::random_access_iterator_tag, T> it;
+			typedef ft::iterator<std::random_access_iterator_tag, T> it;
 			typedef typename it::difference_type 					difference_type;
 			typedef typename it::value_type 						value_type;
 			typedef typename it::pointer 							pointer;
@@ -17,11 +17,11 @@ namespace ft
 			typedef typename it::iterator_category 					iterator_category;
 
 			random_access_iterator(): ptr() {}
-			random_access_iterator(random_access_iterator const &other): ptr(other.ptr) {}
+			random_access_iterator(const random_access_iterator &other): ptr(other.ptr) {}
 			random_access_iterator(pointer p): ptr(p) {}							//Do I need this? If not what is the point of rai?
 			virtual ~random_access_iterator() {}
 
-			random_access_iterator &operator=(random_access_iterator const &other)
+			random_access_iterator &operator=(const random_access_iterator &other)
 			{
 				ptr = other.ptr;
 				return (*this);
@@ -100,6 +100,11 @@ namespace ft
 			reference operator[](difference_type n) const
 			{
 				return (ptr[n]);
+			}
+
+			operator random_access_iterator<const T> ()
+			{
+				return (random_access_iterator<const T>(ptr));
 			}
 
 		protected:

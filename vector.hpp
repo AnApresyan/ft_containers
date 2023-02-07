@@ -51,7 +51,7 @@ namespace ft
 
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _alloc(alloc), _capacity(distance(first, last)), _size(0)
+					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _size(0), _capacity(distance(first, last)), _alloc(alloc)
 			{
 				try 
 				{
@@ -67,7 +67,7 @@ namespace ft
 				}
 			}
 
-			vector(const vector &other): _alloc(other._alloc), _capacity(other._capacity), _size(0)
+			vector(const vector &other): _size(0),  _capacity(other._capacity), _alloc(other._alloc)
 			{
 				this->_arr = this->_alloc.allocate(_capacity);
 				while (this->_size != other._size)
@@ -236,11 +236,14 @@ namespace ft
 
 			//modifiers
 			template <class InputIterator>  
-			void assign (InputIterator first, InputIterator last)		//probably enable if the iterator is input iterator
+			void assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)		//probably enable if the iterator is input iterator
 			{
 				clear();
-				while (first++ != last)
-					push_back(&first);
+				// std::cout << "\n\nPRINTING IN ASSIGN\n\n";
+				// for (iterator it = begin(); it != end(); it++)
+				// 	std::cout << *it << std::endl;
+				while (first != last)
+					push_back(*(first++));
 			}
 
 			void assign (size_type n, const value_type& val)
@@ -256,9 +259,12 @@ namespace ft
 				{
 					_capacity = 18;
 					_arr = _alloc.allocate(_capacity);
-				}	
+				}
 				else if (_size == _capacity)
 					reserve(_capacity * 2);
+				// std::cout << "Size: " << _size << std::endl;
+				// std::cout << "Capacity: " << _capacity << std::endl;
+				// std::cout << "Pushing: " << val << std::endl; 
 				// std::cout << "Here" << std::endl;
 				_alloc.construct(_arr + _size, val);
 				_size++;
@@ -274,11 +280,16 @@ namespace ft
 			{
 				size_t offset = position - begin();
 				value_type copy = val;
+
 				push_back(copy);
-				for (iterator i = end() - 1; i != _arr + offset; --i)
-					*(i) = *(i - 1);
-				*(_arr + offset) = copy;
-				return _arr + offset;
+				for (iterator it = end() - 1; it != position; it--)
+				{
+					std::cout << *it << std::endl;
+					break;
+					*(it) = *(it - 1);
+				}	
+				*(position) = copy;
+				return begin() + offset;
     		}
 
 			void insert(iterator position, size_type n, const T& val)
@@ -292,7 +303,7 @@ namespace ft
    			}
 
 			template <class InputIterator>
-			void insert(iterator position, InputIterator first, InputIterator last)
+			void insert(iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 			{
 				for (; first != last; first++)
 					position = insert(position, *first);
@@ -303,7 +314,7 @@ namespace ft
 			// 	iterator it = first;
 			// 	while (last != this->end()) 
 			// 	{
-			// 		*it = *last;
+			// 		*it = *last;	
 			// 		it++;
 			// 		last++;
 			// 	}
@@ -318,19 +329,14 @@ namespace ft
 			
 			iterator erase (iterator first, iterator last)
 			{
-				size_type s = first - begin();
-				size_type count = end() - last;
-				size_type ret = s;
-
-				while (first++ != last)
-					_alloc.destroy(_alloc.address(*first));
-				this->_size -= count;
+				int count = last - first;
+				size_type ret = first - begin();
+				
+				while (last != end())
+					*(first++) = *(last++);
+				_size -= count;
 				while (count-- > 0)
-				{
-					_alloc.construct(_arr + s, *last);
-					_alloc.destroy(_alloc.address(*(last++)));
-					s++;
-				}
+					_alloc.destroy(_alloc.address(*(first++)));
 				return (begin() + ret);
 			}
 

@@ -47,21 +47,21 @@ int main()
     // std::cout << std::endl;
     // // std::vector<int>::iterator it = vect.begin();
 
-    std::vector<int>::iterator it = vect.begin();
-    for (size_t i = 0; i < vect.size(); i++)
-        std::cout << it[i] << " ";
-    std::cout << std::endl;
-    it+=1;
-    std::cout << it[0] << std::endl;
-    it--;
-    std::cout << it[0] << std::endl;
-    it++;
-    std::cout << it[0] << std::endl;
-    it+=4;
-    std::cout << it[0] << std::endl;
-    it = it - 3;
-    std::cout << it[0] << std::endl;
-    std::cout << *it << std::endl;
+    // std::vector<int>::iterator it = vect.begin();
+    // for (size_t i = 0; i < vect.size(); i++)
+    //     std::cout << it[i] << " ";
+    // std::cout << std::endl;
+    // it+=1;
+    // std::cout << it[0] << std::endl;
+    // it--;
+    // std::cout << it[0] << std::endl;
+    // it++;
+    // std::cout << it[0] << std::endl;
+    // it+=4;
+    // std::cout << it[0] << std::endl;
+    // it = it - 3;
+    // std::cout << it[0] << std::endl;
+    // std::cout << *it << std::endl;
 
 
 	// const int start_size = 7;
