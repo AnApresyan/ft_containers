@@ -1,4 +1,4 @@
-#include "vector.hpp"
+// #include "vector.hpp"
 #include <vector>
 #include <iostream>
 #include <ar.h>
@@ -7,6 +7,8 @@ int main()
 {
     // // std::vector<int> vect;
     std::vector<int> vect;
+
+    std::cout << *(vect.begin()) << std::endl;
     // // ft::vector<int> vect(3, 10);
     // ft::vector<int> vect1(10);
     // std::cout << "Vect1 size: " << vect1.size() << std::endl;
@@ -15,7 +17,7 @@ int main()
     // std::cout << vect.size() << std::endl;
     // // std::cout << vect.max_size() << std::endl;
     // // vect.reserve(5);
-    vect.push_back(10);
+    // vect.push_back(10);
     // vect.push_back(11);
     // vect.push_back(12);
     // vect.push_back(13);

@@ -7,6 +7,8 @@
 #include <memory>
 #include <iostream>
 #include "type_traits.hpp"
+#include "helper.hpp"
+#include "algorithm.hpp"
 
 namespace ft 
 {
@@ -51,7 +53,7 @@ namespace ft
 
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _size(0), _capacity(distance(first, last)), _alloc(alloc)
+					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _size(0), _capacity(ft::distance(first, last)), _alloc(alloc)
 			{
 				try 
 				{
@@ -72,6 +74,12 @@ namespace ft
 				this->_arr = this->_alloc.allocate(_capacity);
 				while (this->_size != other._size)
 					push_back(other[this->_size]);
+			}
+
+			vector& operator= (const vector& other)
+			{
+				this->assign(other.begin(), other.end());
+				return (*this);
 			}
 
 			//Iterators
@@ -262,10 +270,6 @@ namespace ft
 				}
 				else if (_size == _capacity)
 					reserve(_capacity * 2);
-				// std::cout << "Size: " << _size << std::endl;
-				// std::cout << "Capacity: " << _capacity << std::endl;
-				// std::cout << "Pushing: " << val << std::endl; 
-				// std::cout << "Here" << std::endl;
 				_alloc.construct(_arr + _size, val);
 				_size++;
 			}
@@ -273,30 +277,25 @@ namespace ft
 			void pop_back()
 			{
 				_alloc.destroy(_arr + (--_size));
-				_size--;
 			}
 
 			iterator insert(iterator position, const T& val) 
 			{
 				size_t offset = position - begin();
 				value_type copy = val;
-
 				push_back(copy);
+				if (this->size() == 1)
+					return this->begin();
+				if (offset == _size - 1)
+					return begin() + offset;
 				for (iterator it = end() - 1; it != position; it--)
-				{
-					std::cout << *it << std::endl;
-					break;
-					*(it) = *(it - 1);
-				}	
-				*(position) = copy;
+					*it = *(it - 1);
+				*position = copy;
 				return begin() + offset;
     		}
 
 			void insert(iterator position, size_type n, const T& val)
 			{
-				//size_t offset = position - begin();
-
-				resize(size() + n);
 				value_type copy = val;
 				while (n-- > 0)
 					insert(position++, copy);
@@ -306,21 +305,19 @@ namespace ft
 			void insert(iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
 			{
 				for (; first != last; first++)
+				{	
 					position = insert(position, *first);
+					position++;
+				}
 			}
 
-			// iterator erase(iterator first, iterator last)
-			// {
-			// 	iterator it = first;
-			// 	while (last != this->end()) 
-			// 	{
-			// 		*it = *last;	
-			// 		it++;
-			// 		last++;
-			// 	}
-			// 	//resize(this->size() - (last - first));
-			// 	return first;
-			// }
+			void swap (vector& x)
+			{
+
+				ft::sswap(this->_arr, x._arr);
+				ft::sswap(this->_size, x._size);
+				ft::sswap(this->_capacity, x._capacity);
+			}
 
 			iterator erase (iterator position)
 			{
@@ -353,15 +350,47 @@ namespace ft
 
 	};
 
-	template <typename InputIterator>
-	typename std::iterator_traits<InputIterator>::difference_type
-	distance(InputIterator first, InputIterator last)
+	template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		typename std::iterator_traits<InputIterator>::difference_type n = 0;
-		for (; first != last; ++first)
-			++n;
-		return n;
+		if (lhs.size() != rhs.size())
+			return (false);
+		for (size_t i = 0; i < lhs.size(); i++)
+			if (*(lhs.begin() + i) != *(rhs.begin() + i))
+				return (false);
+		return (true);
 	}
+	
+	template <class T, class Alloc>  
+	bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		return !(lhs == rhs);
+	}
+	
+	template <class T, class Alloc>  
+	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(),rhs.begin(), rhs.end()));
+	}
+	
+	template <class T, class Alloc>  
+	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		return !(rhs < lhs);
+	}
+	
+	template <class T, class Alloc>  
+	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		return (rhs < lhs);
+	}
+
+	template <class T, class Alloc>  
+	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		return !(lhs < rhs);
+	}
+
+
 };
 
 #endif

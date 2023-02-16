@@ -110,11 +110,15 @@ namespace ft
 		protected:
 			pointer ptr;
 	};
-	template <typename T>  
-	bool operator==(const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<T>& rhs)
+	template <typename T, typename U>  
+	bool operator==(const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<U>& rhs)
 	{
+		// std::cout << "lhs base: " << *lhs.base() << std::endl;
+		// std::cout << "rhs base: " << *rhs.base() << std::endl;
+
 		return (lhs.base() == rhs.base());
 	}
+
 	template <typename T>
 	bool operator!=(const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<T>& rhs)
 	{
