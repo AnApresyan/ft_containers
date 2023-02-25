@@ -149,11 +149,6 @@ namespace ft
 	{
 		return (rand_it + n);
 	}
-	// template <typename T>
-	// random_access_iterator<T> operator-(typename ft::random_access_iterator<T>::difference_type n,const ft::random_access_iterator<T>& rand_it)
-	// {
-	// 	return (rand_it - n);
-	// }
 	template <typename T, typename U>
 	typename random_access_iterator<T>::difference_type operator-(const ft::random_access_iterator<T> &lhs,const ft::random_access_iterator<U>& rhs)
 	{

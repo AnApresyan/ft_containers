@@ -1,5 +1,6 @@
 NAME = containers
-SRCS = $(wildcard *.cpp)
+#SRCS = $(wildcard *.cpp)
+SRCS = rb_tree.hpp
 OBJS = ${SRCS:.cpp=.o}
 CC = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
