@@ -42,18 +42,29 @@ namespace ft
 			//constructors
 			explicit rb_tree(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _chief(), _sentinel(), _size(), _comp(comp), _alloc(alloc)
 			{
-				
+				_chief.p = _sentinel;
+				_chief.right = _sentinel;
+				_chief.left = _sentinel;
+				_chief.color = BLACK;
 			}
 
 			template <class InputIterator>
 			rb_tree (InputIterator first, InputIterator last, const key_compare& comp = key_compare(),const allocator_type& alloc = allocator_type())
 			{
-
+				_chief.p = _sentinel;
+				_chief.right = _sentinel;
+				_chief.left = _sentinel;
+				_chief.color = BLACK;
+				insert(first, last);
 			}
 
 			rb_tree (const rb_tree& x)
 			{
-				
+				_chief.p = _sentinel;
+				_chief.right = _sentinel;
+				_chief.left = _sentinel;
+				_chief.color = BLACK;
+				insert(x.begin(), x.end());
 			}
 			
 			//operator=
@@ -114,21 +125,53 @@ namespace ft
 
 			pair<iterator,bool> insert (const value_type& val)
 			{
-				rb_node<T> *y = sentinel;
+				rb_node<T> *y = _sentinel;
 				rb_node<T> *x = root();
 
 				while (is_internal(x))
 				{
 					y = x;
-					if (_comp(keyof(z), keyof(x)))
+					if (_comp(keyof(val), keyof(x)))
 						x = x->left;
 					else
 						x = x->right;
 				}
-				
+				if (!_comp(keyof(val), keyof(y)) && !_comp(keyof(y), keyof(val)))
+					return (make_pair(iterator(y), false));
+				rb_node<T> *z = create_node(val);
+				z->p = y;
+				if (is_external(y))
+					_chief.p = z;
+				else if (_comp(keyof(val), keyof(y)))
+					y->left = z;
+				else
+					y->right = z;
+				z->left = _sentinel;
+				z->right = _sentinel;
+				z->color = RED;
+				_size++;
+				if (_comp(keyof(val), keyof(_chief.left)))
+					_chief.left = z;
+				else if (_comp(keyof(_chief.right), keyof(val)))
+					_chief.right = z;
+				insert_fixup(z);
+				return (make_pair(iterator(z), true));
 			}
 
+			iterator insert (iterator position, const value_type& val)
+			{
+				//for now I will disregard the hint
+				return insert(val).first;
+			}
 
+			template <class InputIterator>
+			void insert (InputIterator first, InputIterator last)
+			{
+				while (first++ != last)
+					insert(*first);
+			}
+
+			
 			void swap (rb_tree& x)
 			{
 				ft::sswap(_chief, x._chief);
@@ -156,14 +199,14 @@ namespace ft
 					return (_sentinel);
 				rb_node<T> *temp(root());
 	
-				while (is_internal(temp) && (_comp(KeyOfValue()(temp), k) || _comp(k, KeyOfValue()(temp))))
+				while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
 				{
-					if (_comp(k, KeyOfValue()(temp)))
+					if (_comp(k, keyof(temp)))
 						temp = temp.left;
 					else
 						temp = temp.right;
 				}
-				if (_comp(KeyOfValue()(temp), k) || _comp(k, KeyOfValue()(temp)))
+				if (_comp(keyof(temp), k) || _comp(k, keyof(temp)))
 					return (iterator(temp));
 				return (end());
 			}
@@ -186,9 +229,9 @@ namespace ft
 					return (_sentinel);
 				rb_node<T> *temp(root());
 	
-				while (is_internal(temp) && (_comp(KeyOfValue()(temp), k) || _comp(k, KeyOfValue()(temp))))
+				while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
 				{
-					if (_comp(k, KeyOfValue()(temp)))
+					if (_comp(k, keyof(temp)))
 					{
 						if (is_external(temp->left))
 							break;
@@ -201,7 +244,7 @@ namespace ft
 						temp = temp->right;
 					}
 				}
-				if (_comp(KeyOfValue()(temp), k))
+				if (_comp(keyof(temp), k))
 					return ++iterator(temp);
 				return iterator(temp);
 			}
@@ -217,9 +260,9 @@ namespace ft
 					return (_sentinel);
 				rb_node<T> *temp(root());
 	
-				while (is_internal(temp) && (_comp(KeyOfValue()(temp), k) || _comp(k, KeyOfValue()(temp))))
+				while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
 				{
-					if (_comp(k, KeyOfValue()(temp)))
+					if (_comp(k, keyof(temp)))
 					{
 						if (is_external(temp->left))
 							break;
@@ -343,7 +386,12 @@ namespace ft
 
 			Key keyof(rb_node<T> *x)
 			{
-				return (KeyOfValue(x));
+				return (KeyOfValue()(x->element));
+			}
+
+			Key keyof(const value_type& val)
+			{
+				return (KeyOfValue()(val));
 			}
 
 			void insert_fixup(rb_node<T> *z)
@@ -398,9 +446,20 @@ namespace ft
 				root()->color = BLACK;
 			}
 
-			rb_node<T> *create_node(const value_type& val)
+			rb_node<T> *create_node(const value_type& val)				//taken from Alex :DDDDDDDDDD
 			{
-				// return 
+				rb_node<T>	*new_node = this->_alloc.allocate(1);
+				try
+				{
+					allocator_type	alloc(this->_alloc);
+					alloc.construct(&new_node->data, val);
+				}
+				catch (...)
+				{
+					this->_alloc.deallocate(new_node, 1);
+					throw ;
+				}
+				return (new_node);
 			}
 	};
 

@@ -2,13 +2,43 @@
 #include <vector>
 #include <iostream>
 #include <ar.h>
+#include "rb_tree.hpp"
+
+
+template <class Arg, class Result>
+struct	unary_function
+{
+    typedef Arg		argument_type;   
+    typedef Result	result_type;  
+};
+template <class Pair>
+	struct select_1st : public unary_function<Pair, typename Pair::first_type>
+	{
+		typename Pair::first_type	&operator()(Pair &x) const
+		{
+			return (x.first);
+		}
+
+		const typename Pair::first_type	&operator()(const Pair &x) const
+		{
+			return (x.first);
+		}
+	};
 
 int main()
 {
-    // // std::vector<int> vect;
-    std::vector<int> vect;
+    ft::pair<int, char> p(10, 'a');
+    ft::rb_tree<int, ft::pair<int, char>, select_1st<ft::pair<int, char>>> tr;
+    tr.insert(p);
+}
 
-    std::cout << *(vect.begin()) << std::endl;
+
+// int main()
+// {
+    // // std::vector<int> vect;
+    // std::vector<int> vect;
+
+    // std::cout << *(vect.begin()) << std::endl;
     // // ft::vector<int> vect(3, 10);
     // ft::vector<int> vect1(10);
     // std::cout << "Vect1 size: " << vect1.size() << std::endl;
@@ -71,4 +101,4 @@ int main()
 	// ft::vector<int> vct2;
 	// ft::vector<int>::iterator it = vct.begin();
 
-}
+// }
