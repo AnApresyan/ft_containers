@@ -112,6 +112,22 @@ namespace ft
 
 			//Modifiers
 
+			pair<iterator,bool> insert (const value_type& val)
+			{
+				rb_node<T> *y = sentinel;
+				rb_node<T> *x = root();
+
+				while (is_internal(x))
+				{
+					y = x;
+					if (_comp(keyof(z), keyof(x)))
+						x = x->left;
+					else
+						x = x->right;
+				}
+				
+			}
+
 
 			void swap (rb_tree& x)
 			{
@@ -248,6 +264,16 @@ namespace ft
 
 		private:
 			//helper functions
+			rb_node<T> *min()
+			{
+				return (_chief->left);
+			}
+			
+			rb_node<T> *max()
+			{
+				return (_chief->right);
+			}
+
 			node *root() const
 			{
 				return (_chief.p);
@@ -275,6 +301,106 @@ namespace ft
 				else if (!(n.p).p)
 					return (true);
 				return (false);
+			}
+
+			void left_rotate(rb_node<T> *x)
+			{
+				if (is_external(x->right))
+					return;
+				rb_node<T> *y = x->right;
+				x->right = y->left;
+				if (is_internal(y->left))
+					y->left->p = x;
+				y->p = x->p;
+				if (is_external(x->p))
+					_chief->p = y;
+				else if (x == x->p->left)
+					x->p->left = y;
+				else
+					x->p->right = y;
+				y->left = x;
+				x->p = y;
+			}
+
+			void right_rotate(rb_node<T> *x)
+			{
+				if (is_external(x->left))
+					return;
+				rb_node<T> *y = x->left;
+				x->left = y->right;
+				if (is_internal(y->right))
+					y->right->p = x;
+				y->p = x->p;
+				if (is_external(x->p))
+					_chief->p = y;
+				else if (x == x->p->right)
+					x->p->right = y;
+				else
+					x->p->left = y;
+				y->right = x;
+				x->p = y;
+			}
+
+			Key keyof(rb_node<T> *x)
+			{
+				return (KeyOfValue(x));
+			}
+
+			void insert_fixup(rb_node<T> *z)
+			{
+				while (z->p->color == RED)
+				{
+					if (z->p == z->p->p->left)
+					{
+						rb_node<T> *y = z->p->p->right;
+						if (y->color == RED)
+						{
+							z->p->color = BLACK;
+							y->color = BLACK;
+							z->p->p->color = RED;
+							z = z->p->p;
+						}
+						else
+						{
+							if (z == z->p->right)
+							{
+								z = z->p;
+								left_rotate(z);
+							}
+							z->p->color = BLACK;
+							z->p->p->color = RED;
+							right_rotate(z->p->p);
+						}
+					}
+					else
+					{
+						rb_node<T> *y = z->p->p->left;
+						if (y->color == RED)
+						{
+							z->p->color = BLACK;
+							y->color = BLACK;
+							z->p->p->color = RED;
+							z = z->p->p;
+						}
+						else
+						{
+							if (z == z->p->left)
+							{
+								z = z->p;
+								right_rotate(z);
+							}
+							z->p->color = BLACK;
+							z->p->p->color = RED;
+							left_rotate(z->p->p);
+						}
+					}
+				}
+				root()->color = BLACK;
+			}
+
+			rb_node<T> *create_node(const value_type& val)
+			{
+				// return 
 			}
 	};
 
