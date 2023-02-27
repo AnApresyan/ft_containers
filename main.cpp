@@ -3,33 +3,42 @@
 #include <iostream>
 #include <ar.h>
 #include "rb_tree.hpp"
+#include "rbt_helper.hpp"
+#include "map.hpp"
 
-
-template <class Arg, class Result>
-struct	unary_function
-{
-    typedef Arg		argument_type;   
-    typedef Result	result_type;  
-};
-template <class Pair>
-	struct select_1st : public unary_function<Pair, typename Pair::first_type>
-	{
-		typename Pair::first_type	&operator()(Pair &x) const
-		{
-			return (x.first);
-		}
-
-		const typename Pair::first_type	&operator()(const Pair &x) const
-		{
-			return (x.first);
-		}
-	};
 
 int main()
 {
-    ft::pair<int, char> p(10, 'a');
-    ft::rb_tree<int, ft::pair<int, char>, select_1st<ft::pair<int, char>>> tr;
-    tr.insert(p);
+    ft::pair<int, char> p1(10, 'a');
+    ft::pair<int, char> p2(12, 'b');
+    ft::pair<int, char> p3(9, 'c');
+    ft::pair<int, char> p4(7, 'd');
+    ft::pair<int, char> p5(4, 'e');
+    ft::pair<int, char> p6(20, 'e');
+
+    ft::rb_tree<int, ft::pair<int, char>, ft::select_1st<ft::pair<int, char> > > tr;
+    tr.insert(p1);
+
+    // std::cout << (*tr.begin()).first << std::endl;
+
+    tr.insert(p2);
+    tr.insert(p3);
+    tr.insert(p6);
+    tr.insert(p2);
+    tr.insert(p3);
+    tr.insert(p3);
+    tr.insert(p6);
+    tr.insert(p1);
+    tr.insert(p4);
+    tr.insert(p4);
+    tr.insert(p2);
+
+    // int i = 0;
+    for (ft::rbt_iterator<ft::pair<int, char> > it = tr.begin(); it != tr.end(); it++)
+    {
+        std::cout << (*it).first << std::endl;
+    }
+
 }
 
 

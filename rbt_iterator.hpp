@@ -3,6 +3,7 @@
 
 # include "iterator.hpp"
 # include "rb_node.hpp"
+# include "rbt_helper.hpp"
 
 namespace ft
 {
@@ -10,7 +11,12 @@ namespace ft
 	class rbt_iterator : public ft::iterator<std::bidirectional_iterator_tag, T>
 	{
 		private:
-			rb_node<T> *_node;
+			template <typename T1, typename T2>  
+			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T2>& rhs);
+			
+			template <typename T1, typename T2>  
+			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T2>& rhs);
+			const rb_node<T> *_node;
 		public:
 			typedef ft::iterator<std::bidirectional_iterator_tag, T>	it;
 			typedef typename it::difference_type 						difference_type;
@@ -21,7 +27,7 @@ namespace ft
 	
 			rbt_iterator(): _node() {}
 			rbt_iterator(const rbt_iterator &other): _node(other._node) {}
-			rbt_iterator(rb_node<T> *other): _node(other) {}							//Do I need this? If not what is the point of rai?
+			rbt_iterator(const rb_node<T> *other): _node(other) {}		//Do I need this? If not what is the point of rai?
 			virtual ~rbt_iterator() {}
 
 			rbt_iterator &operator=(const rbt_iterator &other)
@@ -32,7 +38,7 @@ namespace ft
 
 			pointer operator->() const
 			{
-				return *(_node->element);		//how does this work?
+				return ft::addressof(_node->element);		//how does this work?
 			}
 
 			reference operator*() const
@@ -42,21 +48,23 @@ namespace ft
 
 			rbt_iterator& operator++()
 			{
+				// std::cout << "\nIncrementing started\n";
+				// std::cout << _node->right->element.first << std::endl;
 				if (is_internal(_node->right))
 				{
 					_node = _node->right;
 					while (is_internal(_node->left))
 						_node = _node->left;
 				}
-				else if (_node->p)
+				else if (is_internal(_node->p))
 				{
 					if (_node == _node->p->left)
 						_node = _node->p;
 					else
 					{
 						while (_node->p && _node == _node->p->right)
-							_node == _node->p;
-						_node = _node.p;
+							_node = _node->p;
+						_node = _node->p;
 					}
 				}
 				return (*this);
@@ -84,8 +92,8 @@ namespace ft
 					else
 					{
 						while (_node->p && _node == _node->p->left)
-							_node == _node->p;
-						_node = _node.p;	
+							_node = _node->p;
+						_node = _node->p;	
 					}
 				}
 				return (*this);
@@ -106,7 +114,11 @@ namespace ft
 			private:
 				bool is_internal(const rb_node<T> *n)
 				{
-					return (n && n.left && n.right);
+					// if (n)
+					// 	std::cout << n->element.first;
+					// if (n->left)
+					// 	std::cout << "oof\n";
+					return (n && n->left && n->right);
 				}
 	};
 	template <typename T, typename U>  

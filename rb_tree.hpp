@@ -6,6 +6,7 @@
 # include "rbt_helper.hpp"
 # include "rb_node.hpp" 
 # include "pair.hpp"
+# include "algorithm.hpp"
 
 namespace ft
 {
@@ -33,7 +34,7 @@ namespace ft
 			typedef typename Alloc::template rebind<node>::other	node_allocator_type; // what is thisss????
 			
 			node				_chief;
-			node				_sentinel;
+			node				*_sentinel;
 			size_type			_size;
 			key_compare 		_comp;
 			node_allocator_type	_alloc;
@@ -42,35 +43,28 @@ namespace ft
 			//constructors
 			explicit rb_tree(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _chief(), _sentinel(), _size(), _comp(comp), _alloc(alloc)
 			{
-				_chief.p = _sentinel;
-				_chief.right = _sentinel;
-				_chief.left = _sentinel;
-				_chief.color = BLACK;
+				init();
 			}
 
 			template <class InputIterator>
-			rb_tree (InputIterator first, InputIterator last, const key_compare& comp = key_compare(),const allocator_type& alloc = allocator_type())
+			rb_tree (InputIterator first, InputIterator last, const key_compare& comp = key_compare(),const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc)
 			{
-				_chief.p = _sentinel;
-				_chief.right = _sentinel;
-				_chief.left = _sentinel;
-				_chief.color = BLACK;
+				init();
 				insert(first, last);
 			}
 
-			rb_tree (const rb_tree& x)
+			rb_tree (const rb_tree& x): _comp(x._comp), _alloc(x._alloc), _chief(x._chief)
 			{
-				_chief.p = _sentinel;
-				_chief.right = _sentinel;
-				_chief.left = _sentinel;
-				_chief.color = BLACK;
+				init();
 				insert(x.begin(), x.end());
 			}
 			
 			//operator=
 			rb_tree& operator=(const rb_tree& x)
 			{
-				//. . .
+				clear();
+				// init(); //?
+				insert(x.begin(), x.end());
 				return (*this);
 			}
 
@@ -104,6 +98,17 @@ namespace ft
 			{
 				return const_reverse_iterator(end());
 			}
+			
+			reverse_iterator rend()
+			{
+				return reverse_iterator(begin());
+			}
+
+			const_reverse_iterator rend() const
+			{
+				return const_reverse_iterator(begin());
+			}
+
 
 			//Capacity
 			bool empty() const
@@ -127,7 +132,21 @@ namespace ft
 			{
 				rb_node<T> *y = _sentinel;
 				rb_node<T> *x = root();
-
+				
+				// std::cout << "Here\n";
+				if (_size == 0)
+				{
+					rb_node<T> *z = create_node(val);
+					_chief.p = z;
+					_chief.left = z;
+					_chief.right = z;
+					z->left = _sentinel;
+					z->right = _sentinel;
+					z->color = BLACK;
+					z->p = _sentinel;
+					_size++;
+					return ft::make_pair(iterator(z), true);
+				}
 				while (is_internal(x))
 				{
 					y = x;
@@ -136,8 +155,22 @@ namespace ft
 					else
 						x = x->right;
 				}
-				if (!_comp(keyof(val), keyof(y)) && !_comp(keyof(y), keyof(val)))
-					return (make_pair(iterator(y), false));
+				// std::cout << std::endl;
+				// std::cout << "value: " << keyof(val) << std::endl;
+				// std::cout << "Key of y: " << keyof(y) << std::endl;
+				// std::cout << std::endl;
+				
+				if (is_internal(y))
+				{
+					// std::cout << "\nKey: " << keyof(val) << std::endl;
+					// std::cout << "Should enter if clause\n";
+					if (!_comp(keyof(y), keyof(val)) && !_comp(keyof(val), keyof(y)))
+						return (ft::make_pair(iterator(y), false));
+					if (is_internal(y->p) && !_comp(keyof(y->p), keyof(val)) && !_comp(keyof(val), keyof(y->p)))
+						return (ft::make_pair(iterator(y->p), false));
+					// if (is_internal(y->right) && !_comp(keyof(y->right), keyof(val)) && !_comp(keyof(val), keyof(y->right)))
+					// 	return (make_pair(iterator(y->right), false));
+				}	
 				rb_node<T> *z = create_node(val);
 				z->p = y;
 				if (is_external(y))
@@ -154,12 +187,16 @@ namespace ft
 					_chief.left = z;
 				else if (_comp(keyof(_chief.right), keyof(val)))
 					_chief.right = z;
+				// std::cout << "Size: " << _size << std::endl;
+				// std::cout << "Min: " << keyof(min()) << std::endl;
+				// std::cout << "Max: " << keyof(max()) << std::endl;
 				insert_fixup(z);
-				return (make_pair(iterator(z), true));
+				return (ft::make_pair(iterator(z), true));
 			}
 
-			iterator insert (iterator position, const value_type& val)
+			iterator insert (iterator, const value_type& val)
 			{
+				//iterator position
 				//for now I will disregard the hint
 				return insert(val).first;
 			}
@@ -171,7 +208,7 @@ namespace ft
 					insert(*first);
 			}
 
-			
+
 			void swap (rb_tree& x)
 			{
 				ft::sswap(_chief, x._chief);
@@ -202,9 +239,9 @@ namespace ft
 				while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
 				{
 					if (_comp(k, keyof(temp)))
-						temp = temp.left;
+						temp = temp->left;
 					else
-						temp = temp.right;
+						temp = temp->right;
 				}
 				if (_comp(keyof(temp), k) || _comp(k, keyof(temp)))
 					return (iterator(temp));
@@ -218,6 +255,7 @@ namespace ft
 
 			size_type count (const key_type& k) const
 			{
+# 
 				if (is_internal(find(k)))
 					return (1);
 				return (0);
@@ -285,12 +323,12 @@ namespace ft
 
 			pair<const_iterator,const_iterator> equal_range (const key_type& k) const
 			{
-				return (make_pair(lower_bound(k), upper_bound(k)));
+				return (ft::make_pair(lower_bound(k), upper_bound(k)));
 			}
 			
 			pair<iterator,iterator> equal_range (const key_type& k)
 			{
-				return (make_pair(lower_bound(k), upper_bound(k)));
+				return (ft::make_pair(lower_bound(k), upper_bound(k)));
 			}
 
 			//Allocator
@@ -303,18 +341,19 @@ namespace ft
 			~rb_tree()
 			{
 				clear();
+				delete _sentinel;
 			}
 
 		private:
 			//helper functions
 			rb_node<T> *min()
 			{
-				return (_chief->left);
+				return (_chief.left);
 			}
 			
 			rb_node<T> *max()
 			{
-				return (_chief->right);
+				return (_chief.right);
 			}
 
 			node *root() const
@@ -324,7 +363,7 @@ namespace ft
 
 			bool is_root(const node *n)
 			{
-				return (n && !n.p);
+				return (n && is_internal(n->p));
 			}
 
 			bool is_internal(const node *n)
@@ -341,7 +380,7 @@ namespace ft
 			{
 				if (empty())
 					return (true);
-				else if (!(n.p).p)
+				else if (is_external(n->p).p)
 					return (true);
 				return (false);
 			}
@@ -356,7 +395,7 @@ namespace ft
 					y->left->p = x;
 				y->p = x->p;
 				if (is_external(x->p))
-					_chief->p = y;
+					_chief.p = y;
 				else if (x == x->p->left)
 					x->p->left = y;
 				else
@@ -375,7 +414,7 @@ namespace ft
 					y->right->p = x;
 				y->p = x->p;
 				if (is_external(x->p))
-					_chief->p = y;
+					_chief.p = y;
 				else if (x == x->p->right)
 					x->p->right = y;
 				else
@@ -396,8 +435,14 @@ namespace ft
 
 			void insert_fixup(rb_node<T> *z)
 			{
+				// std::cout << "\nInsert fixup: " << keyof(z) << std::endl;
+				// std::cout << "\nInsert fixup, key of parent: " << keyof(z->p) << std::endl;
+				// std::cout << "\nInsert fixup, key of parent's parent: " << keyof(z->p->p) << std::endl;
+				// std::cout << "\nInsert fixup, key of parent's parent's left: " << keyof(z->p->p->left) << std::endl;
+
 				while (z->p->color == RED)
 				{
+					// std::cout << "Maybe here?\n";
 					if (z->p == z->p->p->left)
 					{
 						rb_node<T> *y = z->p->p->right;
@@ -422,6 +467,7 @@ namespace ft
 					}
 					else
 					{
+						// std::cout << "Inside second if\n";
 						rb_node<T> *y = z->p->p->left;
 						if (y->color == RED)
 						{
@@ -452,7 +498,7 @@ namespace ft
 				try
 				{
 					allocator_type	alloc(this->_alloc);
-					alloc.construct(&new_node->data, val);
+					alloc.construct(&new_node->element, val);
 				}
 				catch (...)
 				{
@@ -461,7 +507,54 @@ namespace ft
 				}
 				return (new_node);
 			}
+
+			void init()
+			{
+				_sentinel = new rb_node<T>();
+				_sentinel->color = BLACK;
+
+				_chief.p = _sentinel;
+				_chief.right = _sentinel;
+				_chief.left = _sentinel;
+				_chief.color = BLACK;
+			}
 	};
+
+	template <class Key, class T, class KeyOfValue, class Compare, class Alloc>  
+	bool operator==(const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
+	{
+			return (equal(lhs.begin(), lhs.rend(), rhs.begin()));
+	}
+
+	template < class Key, class T, class KeyOfValue, class Compare, class Alloc >  
+	bool operator!= (const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
+	{
+		return !(lhs == rhs);
+	}
+	
+	template < class Key, class T, class KeyOfValue, class Compare, class Alloc >  
+	bool operator<  (const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
+	{
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(),rhs.begin(), rhs.end()));
+	}
+	
+	template < class Key, class T, class KeyOfValue, class Compare, class Alloc >  
+	bool operator<= (const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
+	{
+		return !(rhs < lhs);
+	}
+	
+	template < class Key, class T, class KeyOfValue, class Compare, class Alloc >  
+	bool operator>  (const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
+	{
+		return (rhs < lhs);
+	}
+
+	template < class Key, class T, class KeyOfValue, class Compare, class Alloc >  
+	bool operator>= (const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
+	{
+		return !(lhs < rhs);
+	}
 
 };
 
