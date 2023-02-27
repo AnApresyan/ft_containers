@@ -10,35 +10,45 @@
 int main()
 {
     ft::pair<int, char> p1(10, 'a');
-    ft::pair<int, char> p2(12, 'b');
-    ft::pair<int, char> p3(9, 'c');
-    ft::pair<int, char> p4(7, 'd');
-    ft::pair<int, char> p5(4, 'e');
-    ft::pair<int, char> p6(20, 'e');
 
-    ft::rb_tree<int, ft::pair<int, char>, ft::select_1st<ft::pair<int, char> > > tr;
-    tr.insert(p1);
+    ft::map<int, char> map;
 
-    // std::cout << (*tr.begin()).first << std::endl;
+    map.insert(p1);
 
-    tr.insert(p2);
-    tr.insert(p3);
-    tr.insert(p6);
-    tr.insert(p2);
-    tr.insert(p3);
-    tr.insert(p3);
-    tr.insert(p6);
-    tr.insert(p1);
-    tr.insert(p4);
-    tr.insert(p4);
-    tr.insert(p2);
-
-    // int i = 0;
-    for (ft::rbt_iterator<ft::pair<int, char> > it = tr.begin(); it != tr.end(); it++)
+    for (ft::rbt_iterator<ft::pair<const int, char> > it = map.begin(); it != map.end(); it++)
     {
-        std::cout << (*it).first << std::endl;
-    }
+        std::cout << it->first << std::endl;
 
+    }    
+
+    // ft::pair<int, char> p2(12, 'b');
+    // ft::pair<int, char> p3(9, 'c');
+    // ft::pair<int, char> p4(7, 'd');
+    // ft::pair<int, char> p5(4, 'e');
+    // ft::pair<int, char> p6(20, 'e');
+
+    // ft::rb_tree<int, ft::pair<int, char>, ft::select_1st<ft::pair<int, char> > > tr;
+    // tr.insert(p1);
+
+    // // std::cout << (*tr.begin()).first << std::endl;
+
+    // tr.insert(p2);
+    // tr.insert(p3);
+    // tr.insert(p6);
+    // tr.insert(p2);
+    // tr.insert(p3);
+    // tr.insert(p3);
+    // tr.insert(p6);
+    // tr.insert(p1);
+    // tr.insert(p4);
+    // tr.insert(p4);
+    // tr.insert(p2);
+
+    // // int i = 0;
+    // for (ft::rbt_iterator<ft::pair<int, char> > it = tr.begin(); it != tr.end(); it++)
+    // {
+    //     std::cout << (*it).first << std::endl;
+    // }
 }
 
 

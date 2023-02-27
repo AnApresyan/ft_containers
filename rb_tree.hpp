@@ -24,7 +24,7 @@ namespace ft
 			typedef value_type* 							pointer;
 			typedef const value_type*						const_pointer;
 			typedef ft::rbt_iterator<T> 					iterator;
-			typedef ft::rbt_iterator<const T> 				const_iterator;
+			typedef ft::const_rbt_iterator<T>				const_iterator;
 			typedef ft::reverse_iterator<iterator> 			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			typedef ptrdiff_t 								difference_type;
@@ -33,8 +33,8 @@ namespace ft
 			typedef rb_node<T>	node;
 			typedef typename Alloc::template rebind<node>::other	node_allocator_type; // what is thisss????
 			
-			node				_chief;
-			node				*_sentinel;
+			rb_base_node		_chief;
+			rb_base_node		_sentinel;
 			size_type			_size;
 			key_compare 		_comp;
 			node_allocator_type	_alloc;
@@ -128,10 +128,11 @@ namespace ft
 
 			//Modifiers
 
-			pair<iterator,bool> insert (const value_type& val)
+			pair<iterator,bool> 
+			insert (const value_type& val)
 			{
-				rb_node<T> *y = _sentinel;
-				rb_node<T> *x = root();
+				rb_base_node *y = &_sentinel;
+				rb_base_node *x = root();
 				
 				// std::cout << "Here\n";
 				if (_size == 0)
@@ -140,11 +141,13 @@ namespace ft
 					_chief.p = z;
 					_chief.left = z;
 					_chief.right = z;
-					z->left = _sentinel;
-					z->right = _sentinel;
+					z->left = &_sentinel;
+					z->right = &_sentinel;
 					z->color = BLACK;
-					z->p = _sentinel;
+					z->p = &_sentinel;
 					_size++;
+					// std::cout << "Here\n";
+					// std::cout << _sentinel.left << std::endl;
 					return ft::make_pair(iterator(z), true);
 				}
 				while (is_internal(x))
@@ -179,8 +182,8 @@ namespace ft
 					y->left = z;
 				else
 					y->right = z;
-				z->left = _sentinel;
-				z->right = _sentinel;
+				z->left = &_sentinel;
+				z->right = &_sentinel;
 				z->color = RED;
 				_size++;
 				if (_comp(keyof(val), keyof(_chief.left)))
@@ -200,6 +203,13 @@ namespace ft
 				//for now I will disregard the hint
 				return insert(val).first;
 			}
+
+			// iterator insert (const_iterator, const value_type& val)
+			// {
+			// 	//iterator position
+			// 	//for now I will disregard the hint
+			// 	return insert(val).first;
+			// }
 
 			template <class InputIterator>
 			void insert (InputIterator first, InputIterator last)
@@ -255,7 +265,7 @@ namespace ft
 
 			size_type count (const key_type& k) const
 			{
-# 
+ 
 				if (is_internal(find(k)))
 					return (1);
 				return (0);
@@ -341,7 +351,6 @@ namespace ft
 			~rb_tree()
 			{
 				clear();
-				delete _sentinel;
 			}
 
 		private:
@@ -356,27 +365,27 @@ namespace ft
 				return (_chief.right);
 			}
 
-			node *root() const
+			rb_base_node *root() const
 			{
 				return (_chief.p);
 			}
 
-			bool is_root(const node *n)
+			bool is_root(const rb_base_node *n)
 			{
 				return (n && is_internal(n->p));
 			}
 
-			bool is_internal(const node *n)
+			bool is_internal(const rb_base_node *n)
 			{
 				return (!is_external(n));
 			}
 
-			bool is_external(const node *n)
+			bool is_external(const rb_base_node *n)
 			{
-				return (!n || n == _sentinel);
+				return (!n || n == &_sentinel);
 			}
 			
-			bool is_chief(const node *n)
+			bool is_chief(const rb_base_node *n)
 			{
 				if (empty())
 					return (true);
@@ -385,11 +394,11 @@ namespace ft
 				return (false);
 			}
 
-			void left_rotate(rb_node<T> *x)
+			void left_rotate(rb_base_node *x)
 			{
 				if (is_external(x->right))
 					return;
-				rb_node<T> *y = x->right;
+				rb_base_node *y = x->right;
 				x->right = y->left;
 				if (is_internal(y->left))
 					y->left->p = x;
@@ -404,11 +413,11 @@ namespace ft
 				x->p = y;
 			}
 
-			void right_rotate(rb_node<T> *x)
+			void right_rotate(rb_base_node *x)
 			{
 				if (is_external(x->left))
 					return;
-				rb_node<T> *y = x->left;
+				rb_base_node *y = x->left;
 				x->left = y->right;
 				if (is_internal(y->right))
 					y->right->p = x;
@@ -423,9 +432,9 @@ namespace ft
 				x->p = y;
 			}
 
-			Key keyof(rb_node<T> *x)
+			Key keyof(rb_base_node *x)
 			{
-				return (KeyOfValue()(x->element));
+				return (KeyOfValue()((static_cast<node*>(x))->element));
 			}
 
 			Key keyof(const value_type& val)
@@ -433,7 +442,7 @@ namespace ft
 				return (KeyOfValue()(val));
 			}
 
-			void insert_fixup(rb_node<T> *z)
+			void insert_fixup(rb_base_node *z)
 			{
 				// std::cout << "\nInsert fixup: " << keyof(z) << std::endl;
 				// std::cout << "\nInsert fixup, key of parent: " << keyof(z->p) << std::endl;
@@ -445,7 +454,7 @@ namespace ft
 					// std::cout << "Maybe here?\n";
 					if (z->p == z->p->p->left)
 					{
-						rb_node<T> *y = z->p->p->right;
+						rb_base_node *y = z->p->p->right;
 						if (y->color == RED)
 						{
 							z->p->color = BLACK;
@@ -468,7 +477,7 @@ namespace ft
 					else
 					{
 						// std::cout << "Inside second if\n";
-						rb_node<T> *y = z->p->p->left;
+						rb_base_node *y = z->p->p->left;
 						if (y->color == RED)
 						{
 							z->p->color = BLACK;
@@ -510,13 +519,16 @@ namespace ft
 
 			void init()
 			{
-				_sentinel = new rb_node<T>();
-				_sentinel->color = BLACK;
-
-				_chief.p = _sentinel;
-				_chief.right = _sentinel;
-				_chief.left = _sentinel;
+				_sentinel.color = BLACK;
+				_chief.p = &_sentinel;
+				_chief.right = &_sentinel;
+				_chief.left = &_sentinel;
 				_chief.color = BLACK;
+
+				// std::cout << "Sentinel: " << &_sentinel << std::endl;
+				// std::cout << "Sentinel left: " << _sentinel.left << std::endl;
+				// if (_sentinel.left)
+				// 	std::cout << "oof\n";
 			}
 	};
 

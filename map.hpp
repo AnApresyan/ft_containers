@@ -145,6 +145,11 @@ namespace ft
 				return _tree.insert(position, val);
 			}
 
+			// iterator insert (const_iterator position, const value_type& val)
+			// {
+			// 	return _tree.insert(position, val);
+			// }
+
 			template <class InputIterator>  
 			void insert (InputIterator first, InputIterator last)
 			{

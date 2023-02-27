@@ -9,18 +9,15 @@ namespace ft
 		BLACK
 	}	node_color;
 
-	template <typename T>
-	class rb_node
+	class rb_base_node
 	{
 		public:
 
-			rb_node(): element(), right(NULL), left(NULL), p(NULL), color(RED) {}
-			~rb_node() {}
-			rb_node(const rb_node &other): element(other.element), right(other.right), left(other.left), p(other.p), color(other.color) {}
-			rb_node(const T &element): element(element), right(NULL), left(NULL), p(NULL), color(RED) {}
-			rb_node &operator=(const rb_node &other)
+			rb_base_node(): right(NULL), left(NULL), p(NULL), color(RED) {}
+			~rb_base_node() {}
+			rb_base_node(const rb_base_node &other): right(other.right), left(other.left), p(other.p), color(other.color) {}
+			rb_base_node &operator=(const rb_base_node &other)
 			{
-				this->element = other.element;
 				this->right = other.right;
 				this->left = other.left;
 				this->p = other.p;
@@ -28,12 +25,18 @@ namespace ft
 				return (*this);
 			}
 			
-			T 			element;
-			rb_node		*right;
-			rb_node		*left;
-			rb_node		*p;
-			node_color	color;
+			rb_base_node		*right;
+			rb_base_node		*left;
+			rb_base_node		*p;
+			node_color			color;
 	};
+
+	template <typename T>
+	struct rb_node : public rb_base_node
+	{
+		T element;
+	};
+		
 };
 
 #endif
