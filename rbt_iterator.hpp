@@ -37,7 +37,8 @@ namespace ft
 			template <typename T1>  
 			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
 
-
+			template <class K1, class T1, class KOV1, class C1, class A1>
+			friend class rb_tree;
 			rb_base_node *_node;
 		public:
 			typedef ft::iterator<std::bidirectional_iterator_tag, T>	it;
@@ -172,6 +173,9 @@ namespace ft
 			
 			template <typename T1, typename T2>  
 			friend bool operator!=(const ft::const_rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T2>& rhs);
+			
+			template <class K1, class T1, class KOV1, class C1, class A1>
+			friend class rb_tree;
 			const rb_base_node *_node;
 		public:
 			typedef ft::iterator<std::bidirectional_iterator_tag, T>	it;
@@ -201,7 +205,7 @@ namespace ft
 			reference operator*() const
 			{
 				// return _node->element;
-				std::cout << "\n\nOf aman esim e 2.1\n\n";
+				// std::cout << "\n\nOf aman esim e 2.1\n\n";
 				return (static_cast<const rb_node<T>*>(this->_node)->element);
 
 			}
@@ -250,12 +254,12 @@ namespace ft
 
 			const_rbt_iterator& operator--()
 			{
-				std::cout << "\nof aman esim e\n";
+				// std::cout << "\nof aman esim e\n";
 				if (!is_internal(_node))
 				{
-					std::cout << "\nMtaaaavvv\n";
+					// std::cout << "\nMtaaaavvv\n";
 					_node = _node->p;
-				std::cout << "Paaaaarent: " <<(static_cast<const rb_node<T>*>(_node))->element.first << std::endl;
+				// std::cout << "Paaaaarent: " <<(static_cast<const rb_node<T>*>(_node))->element.first << std::endl;
 					return (*this);
 				}
 				if (is_internal(_node->left))

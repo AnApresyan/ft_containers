@@ -12,8 +12,8 @@
 namespace ft
 {
 
-	template < class Key, class T, class KeyOfValue, class Compare = less<Key>, class Alloc = std::allocator<T> >
-	class rb_tree 
+		template < class Key, class T, class KeyOfValue, class Compare = less<Key>, class Alloc = std::allocator<T> >
+		class rb_tree 
 	{
 		public:
 			typedef Key 									key_type;
@@ -242,7 +242,163 @@ namespace ft
 					
 			}
 
+			void erase (iterator position)
+			{
+				rb_base_node *z = position._node;
+				rb_base_node *y = z;
+				node_color original_color_y = y->color;
+				rb_base_node *x;
 
+				if (position._node == _chief.left)
+				{
+					_chief.left = (++position)._node;
+					position--;
+				}
+				if (position._node == _chief.right)
+				{
+					_chief.right = (--position)._node;
+					_sentinel.p = _chief.right;
+					position++;
+				}
+	
+				if (is_external(z->left))
+				{
+					x = z->right;
+					rb_transplant(z, z->right);
+				}
+				else if (is_external(z->right))
+				{
+					x = z->left;
+					rb_transplant(z, z->left);
+				}
+				else
+				{
+					y = tree_min(z->right);
+					original_color_y = y->color;
+					x = y->right;
+					if (y->p == z)
+						x->p = y;
+					else
+					{
+						rb_transplant(y, y->right);
+						y->right = z->right;
+						y->right->p = y;
+					}
+					rb_transplant(z, y);
+					y->left = z->left;
+					y->left->p = y;
+					y->color = z->color;
+				}
+				if (original_color_y == BLACK)
+					delete_fixup(x);
+			}
+
+			size_type	erase(const key_type &k)		//I was too lazy to think about this easy one
+			{
+				iterator	low = lower_bound(k);
+				iterator	high = upper_bound(k);
+				size_type	deletions = 0;
+				while (low != high)
+				{
+					erase(low++);
+					deletions++;
+				}
+				return (deletions);
+			}
+
+			void erase (iterator first, iterator last)
+			{
+				while (first != last)
+				{
+					erase(first);
+					first++;
+				}
+			}
+
+		private:
+			void delete_fixup(rb_base_node *x)
+			{
+				while (!is_root(x) && x->color == BLACK)
+				{
+					rb_base_node *w;
+					if (x == x->p->left)
+					{
+						w  = x->p->right;
+						if (w->color == RED)
+						{
+							w->color = BLACK;
+							x->p->color = RED;
+							left_rotate(x->p);
+							w = x->p->right;
+						}
+						if (w->left->color == BLACK && w->right->color == BLACK)
+						{
+							w->color = RED;
+							x = x->p;
+						}
+						else
+						{
+							if (w->right->color == BLACK)
+							{
+								w->left->color = BLACK;
+								w->color = RED;
+								right_rotate(w);
+								w = x->p->right;
+							}
+							w->color = x->p->color;
+							x->p->color = BLACK;
+							w->right->color = BLACK;
+							left_rotate(x->p);
+							x = root();
+						}
+					}
+					else
+					{
+						w  = x->p->left;
+						if (w->color == RED)
+						{
+							w->color = BLACK;
+							x->p->color = RED;
+							right_rotate(x->p);
+							w = x->p->left;
+						}
+						if (w->right->color == BLACK && w->left->color == BLACK)
+						{
+							w->color = RED;
+							x = x->p;
+						}
+						else
+						{
+							if (w->left->color == BLACK)
+							{
+								w->right->color = BLACK;
+								w->color = RED;
+								left_rotate(w);
+								w = x->p->left;
+							}
+							w->color = x->p->color;
+							x->p->color = BLACK;
+							w->left->color = BLACK;
+							right_rotate(x->p);
+							x = root();
+						}
+					}	
+				}
+				x->color = BLACK;
+			}
+
+			rb_base_node *tree_min(rb_base_node *n)
+			{
+				while (is_internal(n->left))
+					n = n->left;
+				return n;
+			}
+
+		public:
+			// size_type erase (const key_type& k)
+			// {
+
+			// }
 			void swap (rb_tree& x)
 			{
 				ft::sswap(_chief, x._chief);
@@ -254,7 +410,11 @@ namespace ft
 
 			void clear()
 			{
-
+				destroy_subtree(root());
+				_size = 0;
+				_chief.p = &_sentinel;
+				_chief.right = &_sentinel;
+				_chief.left = &_sentinel;
 			}
 
 			//Observers
@@ -264,11 +424,11 @@ namespace ft
 			}
 
 			//Operations
-			iterator find (const key_type& k)
+			const_iterator find (const key_type& k) const
 			{
 				if (empty())
-					return (_sentinel);
-				rb_node<T> *temp(root());
+					return (const_iterator(&_sentinel));
+				rb_base_node *temp(root());
 	
 				while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
 				{
@@ -278,19 +438,19 @@ namespace ft
 						temp = temp->right;
 				}
 				if (_comp(keyof(temp), k) || _comp(k, keyof(temp)))
-					return (iterator(temp));
+					return (const_iterator(temp));
 				return (end());
 			}
 			
-			const_iterator find (const key_type& k) const
+			iterator find (const key_type& k)
 			{
-				return const_iterator(find(k));		//how does this part work?????
+				const_iterator	const_it = static_cast<const rb_tree&>(*this).find(k);
+				return (iterator(const_cast<rb_base_node*>(const_it._node)));
 			}
 
 			size_type count (const key_type& k) const
 			{
- 
-				if (is_internal(find(k)))
+				if (is_internal(find(k)._node))
 					return (1);
 				return (0);
 			}
@@ -399,12 +559,12 @@ namespace ft
 				return (n && is_internal(n->p));
 			}
 
-			bool is_internal(const rb_base_node *n)
+			bool is_internal(const rb_base_node *n) const
 			{
 				return (!is_external(n));
 			}
 
-			bool is_external(const rb_base_node *n)
+			bool is_external(const rb_base_node *n) const
 			{
 				return (!n || n == &_sentinel);
 			}
@@ -564,6 +724,17 @@ namespace ft
 				else
 					u->p->right = v;
 				v->p = u->p;
+			}
+
+			void	destroy_subtree(rb_base_node *x)
+			{
+				if (is_external(x))
+					return ;
+				destroy_subtree(x->left);
+				destroy_subtree(x->right);
+				allocator_type	alloc(this->_alloc);
+				alloc.destroy(&static_cast<node*>(x)->element);
+				this->_alloc.deallocate(static_cast<node*>(x), 1);
 			}
 	};
 
