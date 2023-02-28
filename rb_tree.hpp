@@ -7,6 +7,7 @@
 # include "rb_node.hpp" 
 # include "pair.hpp"
 # include "algorithm.hpp"
+# include <iostream>
 
 namespace ft
 {
@@ -71,16 +72,18 @@ namespace ft
 			//Iterators
 			iterator begin()
 			{
+				// std::cout<< "In begin: " << static_cast<node*>(_chief.left)->element.first;
 				return iterator(_chief.left);
 			}
 
 			const_iterator begin() const
 			{
-				return const_iterator(_chief.right);
+				return const_iterator(_chief.left);
 			}
 
 			iterator end()
 			{
+				// std::cout << &_sentinel << std::endl;
 				return iterator(&_sentinel);
 			}
 			
@@ -153,27 +156,23 @@ namespace ft
 				}
 				while (is_internal(x))
 				{
+					// std::cout << "internal root\n";
+					// std::cout << "\n\nx: " << (static_cast<const rb_node<T>*>(x))->element.first << std::endl;
 					y = x;
 					if (_comp(keyof(val), keyof(x)))
+					{
+						// std::cout << "Here\n";
 						x = x->left;
+					}	
 					else
 						x = x->right;
 				}
-				// std::cout << std::endl;
-				// std::cout << "value: " << keyof(val) << std::endl;
-				// std::cout << "Key of y: " << keyof(y) << std::endl;
-				// std::cout << std::endl;
-				
 				if (is_internal(y))
 				{
-					// std::cout << "\nKey: " << keyof(val) << std::endl;
-					// std::cout << "Should enter if clause\n";
 					if (!_comp(keyof(y), keyof(val)) && !_comp(keyof(val), keyof(y)))
 						return (ft::make_pair(iterator(y), false));
 					if (is_internal(y->p) && !_comp(keyof(y->p), keyof(val)) && !_comp(keyof(val), keyof(y->p)))
 						return (ft::make_pair(iterator(y->p), false));
-					// if (is_internal(y->right) && !_comp(keyof(y->right), keyof(val)) && !_comp(keyof(val), keyof(y->right)))
-					// 	return (make_pair(iterator(y->right), false));
 				}	
 				rb_node<T> *z = create_node(val);
 				z->p = y;
@@ -187,26 +186,33 @@ namespace ft
 				z->right = &_sentinel;
 				z->color = RED;
 				_size++;
-				std::cout << "\n\n\nChecking\n\n\n";
+				// std::cout << "\n\n\nChecking\n\n\n";
 				if (_comp(keyof(val), keyof(_chief.left)))
 				{
-					std::cout << "\n\n\\updating minimum\n\n\n";
+					// std::cout << "\n\n\\updating minimum\n\n\n";
 					_chief.left = z;
 				}	
 				else if (_comp(keyof(_chief.right), keyof(val)))
 				{
-					std::cout << "\n\n\\updating maximum\n\n\n";
-					std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
+					// std::cout << "\n\n\\updating maximum\n\n\n";
+					// std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
 					_chief.right = z;
 					_sentinel.p = z;
 				}	
 				// std::cout << "Size: " << _size << std::endl;
 				// std::cout << "Min: " << keyof(min()) << std::endl;
 				// std::cout << "Max: " << keyof(max()) << std::endl;
-				insert_fixup(z);
-				std::cout << "\n\n\nAfter fixup\n\n\n";
-				std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
+				// std::cout << "\n\ny: " << (static_cast<const rb_node<T>*>(y))->element.first << std::endl;
+				// std::cout << "\n\nz parent: " << (static_cast<const rb_node<T>*>(z->p))->element.first << std::endl;
+				// std::cout << "\n\nz: " << (static_cast<const rb_node<T>*>(z))->element.first << std::endl;
 
+				insert_fixup(z);
+				// std::cout << "\n\n\nAfter fixup\n\n\n";
+				// std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
+				// std::cout << "The key of the smallest element: " << (*begin()).first << std::endl;
+				// std::cout << "The key of begin: " << begin()->first << std::endl;
+				// std::cout << "The key of newly inserted pair: " << z->element.first << std::endl;
+				// std::cout << "The end: " << (*end()).first << std::endl;
 				return (ft::make_pair(iterator(z), true));
 			}
 
@@ -227,8 +233,13 @@ namespace ft
 			template <class InputIterator>
 			void insert (InputIterator first, InputIterator last)
 			{
-				while (first++ != last)
+				while (first != last)
+				{
+					// std::cout<< "Araaa: " << (*first).first << std::endl;
 					insert(*first);
+					first++;
+				}
+					
 			}
 
 
@@ -542,6 +553,17 @@ namespace ft
 				// std::cout << "Sentinel left: " << _sentinel.left << std::endl;
 				// if (_sentinel.left)
 				// 	std::cout << "oof\n";
+			}
+
+			void rb_transplant(rb_base_node *u, rb_base_node *v)
+			{
+				if (is_external(u->p))
+					_chief.p = v;
+				else if (u == u->p->left)
+					u->p->left = v;
+				else
+					u->p->right = v;
+				v->p = u->p;
 			}
 	};
 

@@ -4,6 +4,7 @@
 # include "iterator.hpp"
 # include "rb_node.hpp"
 # include "rbt_helper.hpp"
+# include <iostream>
 
 namespace ft
 {
@@ -114,19 +115,19 @@ namespace ft
 					while (is_internal(_node->right))
 						_node = _node->right;
 				}
-				else if (_node->p)
+				else if (is_internal(_node->p))
 				{
 					if (_node == _node->p->right)
 						_node = _node->p;
 					else
 					{
-						while (_node->p && _node == _node->p->left)
+						while (is_internal(_node->p) && _node == _node->p->left)
 							_node = _node->p;
 						_node = _node->p;	
 					}
 				}
-				else
-					_node = _node->left;
+				// else
+				// 	_node = _node->right;
 				return (*this);
 			}
 
@@ -200,35 +201,43 @@ namespace ft
 			reference operator*() const
 			{
 				// return _node->element;
+				std::cout << "\n\nOf aman esim e 2.1\n\n";
 				return (static_cast<const rb_node<T>*>(this->_node)->element);
 
 			}
 
 			const_rbt_iterator& operator++()
 			{
-				// std::cout << "\nIncrementing started\n";
-				// std::cout << _node->right->element.first << std::endl;
+				// std::cout << (static_cast<const rb_node<T>*>(_node->p))->element.first;
 				if (is_internal(_node->right))
 				{
-					// std::cout << "Here?\n";
 					_node = _node->right;
 					while (is_internal(_node->left))
 						_node = _node->left;
 				}
 				else if (is_internal(_node->p))
 				{
-					
+					// std::cout << "WTFFF\n";
 					if (_node == _node->p->left)
+					{
+						// std::cout 
 						_node = _node->p;
+					}             
 					else
 					{
-						while (_node->p && _node == _node->p->right)
+						while (is_internal(_node->p) && _node == _node->p->right)
 							_node = _node->p;
 						_node = _node->p;
+						// std::cout << "Of de aman esim e\n";
+						// std::cout << (static_cast<const rb_node<T>*>(_node))->element.first;
+
 					}
 				}
 				else
-					_node = _node->left;
+				{
+					// std::cout << "of de aman esim e 2.0\n";
+					_node = _node->right;
+				}
 				return (*this);
 			}
 
@@ -241,25 +250,33 @@ namespace ft
 
 			const_rbt_iterator& operator--()
 			{
+				std::cout << "\nof aman esim e\n";
 				if (!is_internal(_node))
+				{
+					std::cout << "\nMtaaaavvv\n";
 					_node = _node->p;
+				std::cout << "Paaaaarent: " <<(static_cast<const rb_node<T>*>(_node))->element.first << std::endl;
+					return (*this);
+				}
 				if (is_internal(_node->left))
 				{
 					_node = _node->left;
 					while (is_internal(_node->right))
 						_node = _node->right;
 				}
-				else if (_node->p)
+				else if (is_internal(_node->p))
 				{
 					if (_node == _node->p->right)
 						_node = _node->p;
 					else
 					{
-						while (_node->p && _node == _node->p->left)
+						while (is_internal(_node->p) && _node == _node->p->left)
 							_node = _node->p;
 						_node = _node->p;	
 					}
 				}
+				// else
+				// 	_node = _node->left;
 				return (*this);
 			}
 

@@ -101,11 +101,13 @@ namespace ft
 			}
 			reverse_iterator operator-(difference_type n) const
 			{
+				// if (n == 0)	
+				// 	return ft::reverse_iterator<Iterator>(_base);
 				return ft::reverse_iterator<Iterator>(_base + n);
 			}
 			reverse_iterator& operator--()
 			{
-				_base++;
+				++_base;
 				return (*this);
 			}
 			reverse_iterator  operator--(int)
