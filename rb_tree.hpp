@@ -141,6 +141,7 @@ namespace ft
 					_chief.p = z;
 					_chief.left = z;
 					_chief.right = z;
+					_sentinel.p = z;
 					z->left = &_sentinel;
 					z->right = &_sentinel;
 					z->color = BLACK;
@@ -186,14 +187,26 @@ namespace ft
 				z->right = &_sentinel;
 				z->color = RED;
 				_size++;
+				std::cout << "\n\n\nChecking\n\n\n";
 				if (_comp(keyof(val), keyof(_chief.left)))
+				{
+					std::cout << "\n\n\\updating minimum\n\n\n";
 					_chief.left = z;
+				}	
 				else if (_comp(keyof(_chief.right), keyof(val)))
+				{
+					std::cout << "\n\n\\updating maximum\n\n\n";
+					std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
 					_chief.right = z;
+					_sentinel.p = z;
+				}	
 				// std::cout << "Size: " << _size << std::endl;
 				// std::cout << "Min: " << keyof(min()) << std::endl;
 				// std::cout << "Max: " << keyof(max()) << std::endl;
 				insert_fixup(z);
+				std::cout << "\n\n\nAfter fixup\n\n\n";
+				std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
+
 				return (ft::make_pair(iterator(z), true));
 			}
 

@@ -7,15 +7,36 @@
 
 namespace ft
 {
+
+	template<typename T>
+	class const_rbt_iterator;
+
 	template <typename T> 
 	class rbt_iterator : public ft::iterator<std::bidirectional_iterator_tag, T>
 	{
 		private:
-			template <typename T1, typename T2>  
-			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T2>& rhs);
+			template <typename T1>  
+			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
 			
-			template <typename T1, typename T2>  
-			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T2>& rhs);
+			template <typename T1>  
+			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
+			
+			template <typename T1>  
+			friend class const_rbt_iterator;
+
+			template <typename T1>  
+			friend bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
+			
+			template <typename T1>  
+			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
+			
+			template <typename T1>  
+			friend bool operator!=(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
+			
+			template <typename T1>  
+			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
+
+
 			rb_base_node *_node;
 		public:
 			typedef ft::iterator<std::bidirectional_iterator_tag, T>	it;
@@ -85,6 +106,8 @@ namespace ft
 
 			rbt_iterator& operator--()
 			{
+				if (!is_internal(_node))
+					_node = _node->p;
 				if (is_internal(_node->left))
 				{
 					_node = _node->left;
@@ -187,12 +210,14 @@ namespace ft
 				// std::cout << _node->right->element.first << std::endl;
 				if (is_internal(_node->right))
 				{
+					// std::cout << "Here?\n";
 					_node = _node->right;
 					while (is_internal(_node->left))
 						_node = _node->left;
 				}
 				else if (is_internal(_node->p))
 				{
+					
 					if (_node == _node->p->left)
 						_node = _node->p;
 					else
@@ -202,6 +227,8 @@ namespace ft
 						_node = _node->p;
 					}
 				}
+				else
+					_node = _node->left;
 				return (*this);
 			}
 
@@ -214,6 +241,8 @@ namespace ft
 
 			const_rbt_iterator& operator--()
 			{
+				if (!is_internal(_node))
+					_node = _node->p;
 				if (is_internal(_node->left))
 				{
 					_node = _node->left;
@@ -244,11 +273,20 @@ namespace ft
 			private:
 				bool is_internal(const rb_base_node *n)
 				{
-					// if (n)
-					// 	std::cout << n->element.first;
-					// if (n->left)
-					// 	std::cout << "oof\n";
-					return (n && n->left && n->right);
+					// std::cout << "Is internal: " << n << std::endl; 
+					// // if (n)
+					// // 	std::cout << "First condition holds\n";
+					// // if (n->left)
+					// // 	std::cout << "Second condition holds\n";
+					// // std::cout << (static_cast<const rb_node<T>*>(n)->left)->element.first;
+					// return (n && n->left && n->right);
+					return (!is_external(n));
+				}
+
+				bool is_external(const rb_base_node *n)
+				{
+					// std::cout << n->left << std::endl;
+					return (n && !n->left);
 				}
 	};
 
@@ -260,6 +298,31 @@ namespace ft
 
 	template <typename T, typename U>
 	bool operator!=(const ft::rbt_iterator<T>& lhs,const ft::rbt_iterator<U>& rhs)
+	{
+		return (lhs._node != rhs._node);
+	}
+
+	template <typename T1>  
+	 bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs)
+	 {
+		return (lhs._node == rhs._node);
+	 }
+	
+	template <typename T1>  
+	 bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs)
+	 {
+		return (lhs._node == rhs._node);
+
+	 }
+	
+	template <typename T1>  
+	bool operator!=(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs)
+	{
+	return (lhs._node != rhs._node);
+ 	}
+	
+	template <typename T1>  
+	bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs)
 	{
 		return (lhs._node != rhs._node);
 	}
