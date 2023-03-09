@@ -17,28 +17,20 @@ namespace ft
 	{
 		private:
 			template <typename T1>  
-			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
-			
-			template <typename T1>  
-			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
-			
-			template <typename T1>  
 			friend class const_rbt_iterator;
 
+			template <class K1, class T1, class KOV1, class C1, class A1>
+			friend class rb_tree;
+
+			template <typename T1>  
+			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
+			
 			template <typename T1>  
 			friend bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
 			
 			template <typename T1>  
 			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
-			
-			template <typename T1>  
-			friend bool operator!=(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
-			
-			template <typename T1>  
-			friend bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
 
-			template <class K1, class T1, class KOV1, class C1, class A1>
-			friend class rb_tree;
 			rb_base_node *_node;
 		public:
 			typedef ft::iterator<std::bidirectional_iterator_tag, T>	it;
@@ -164,18 +156,34 @@ namespace ft
 				}
 	};
 
+	template <class T>
+	bool	operator==(const rbt_iterator<T> &lhs, const rbt_iterator<T> &rhs)
+	{
+		return (lhs._node == rhs._node);
+	}
+
+	template <class T>
+	bool	operator!=(const rbt_iterator<T> &lhs, const rbt_iterator<T> &rhs)
+	{
+		return (!(lhs == rhs));
+	}
+
 	template <typename T> 
 	class const_rbt_iterator : public ft::iterator<std::bidirectional_iterator_tag, T>
 	{
 		private:
-			template <typename T1, typename T2>  
-			friend bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T2>& rhs);
-			
-			template <typename T1, typename T2>  
-			friend bool operator!=(const ft::const_rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T2>& rhs);
-			
 			template <class K1, class T1, class KOV1, class C1, class A1>
 			friend class rb_tree;
+
+			template <typename T1>  
+			friend bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
+			
+			template <typename T1>  
+			friend bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs);
+			
+			template <typename T1>  
+			friend bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs);
+			
 			const rb_base_node *_node;
 		public:
 			typedef ft::iterator<std::bidirectional_iterator_tag, T>	it;
@@ -189,6 +197,7 @@ namespace ft
 			const_rbt_iterator(): _node() {}
 			const_rbt_iterator(const rb_base_node *other): _node(other) {}		
 			const_rbt_iterator(const iterator &other): _node(other._node) {}
+			
 			virtual ~const_rbt_iterator() {}
 
 			const_rbt_iterator &operator=(const iterator &other)
@@ -206,7 +215,7 @@ namespace ft
 			{
 				// return _node->element;
 				// std::cout << "\n\nOf aman esim e 2.1\n\n";
-				return (static_cast<const rb_node<T>*>(this->_node)->element);
+				return (static_cast<const rb_node<T>*>(this->_node))->element;
 
 			}
 
@@ -311,54 +320,42 @@ namespace ft
 				}
 	};
 
-	template <typename T, typename U>  
-	bool operator==(const ft::rbt_iterator<T>& lhs,const ft::rbt_iterator<U>& rhs)
+	template <class T>
+	bool	operator==(const const_rbt_iterator<T> &lhs, const const_rbt_iterator<T> &rhs)
 	{
 		return (lhs._node == rhs._node);
 	}
 
-	template <typename T, typename U>
-	bool operator!=(const ft::rbt_iterator<T>& lhs,const ft::rbt_iterator<U>& rhs)
+	template <class T>
+	bool	operator!=(const const_rbt_iterator<T> &lhs, const const_rbt_iterator<T> &rhs)
 	{
-		return (lhs._node != rhs._node);
+		return (!(lhs == rhs));
 	}
 
-	template <typename T1>  
-	 bool operator==(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs)
-	 {
-		return (lhs._node == rhs._node);
-	 }
-	
-	template <typename T1>  
-	 bool operator==(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs)
-	 {
-		return (lhs._node == rhs._node);
-
-	 }
-	
-	template <typename T1>  
-	bool operator!=(const ft::const_rbt_iterator<T1>& lhs,const ft::rbt_iterator<T1>& rhs)
+	template <class T>
+	bool	operator!=(const rbt_iterator<T> &lhs, const const_rbt_iterator<T> &rhs)
 	{
-	return (lhs._node != rhs._node);
- 	}
-	
-	template <typename T1>  
-	bool operator!=(const ft::rbt_iterator<T1>& lhs,const ft::const_rbt_iterator<T1>& rhs)
-	{
-		return (lhs._node != rhs._node);
+		return (!(lhs == rhs));
 	}
 
-	template <typename T, typename U>  
-	bool operator==(const ft::const_rbt_iterator<T>& lhs,const ft::const_rbt_iterator<U>& rhs)
+	template <class T>
+	bool	operator!=(const const_rbt_iterator<T> &lhs, const rbt_iterator<T> &rhs)
+	{
+		return (!(lhs == rhs));
+	}
+
+	template <class T>
+	bool	operator==(const rbt_iterator<T> &lhs, const const_rbt_iterator<T> &rhs)
 	{
 		return (lhs._node == rhs._node);
 	}
 
-	template <typename T, typename U>
-	bool operator!=(const ft::const_rbt_iterator<T>& lhs,const ft::const_rbt_iterator<U>& rhs)
+	template <class T>
+	bool	operator==(const const_rbt_iterator<T> &lhs, const rbt_iterator<T> &rhs)
 	{
-		return (lhs._node != rhs._node);
+		return (lhs._node == rhs._node);
 	}
+
 };
 
 #endif

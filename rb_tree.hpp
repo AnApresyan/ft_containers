@@ -24,8 +24,8 @@ namespace ft
 			typedef const value_type& 						const_reference;
 			typedef value_type* 							pointer;
 			typedef const value_type*						const_pointer;
-			typedef ft::rbt_iterator<T> 					iterator;
-			typedef ft::const_rbt_iterator<T>				const_iterator;
+			typedef ft::rbt_iterator<value_type> 			iterator;
+			typedef ft::const_rbt_iterator<value_type>		const_iterator;
 			typedef ft::reverse_iterator<iterator> 			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			typedef ptrdiff_t 								difference_type;
@@ -48,13 +48,14 @@ namespace ft
 			}
 
 			template <class InputIterator>
-			rb_tree (InputIterator first, InputIterator last, const key_compare& comp = key_compare(),const allocator_type& alloc = allocator_type()): _comp(comp), _alloc(alloc)
+			rb_tree (InputIterator first, InputIterator last, const key_compare& comp = key_compare(),const allocator_type& alloc = allocator_type()): _chief(), _sentinel(), _size(), _comp(comp), _alloc(alloc)
 			{
+				// std::cout << "Also here?\n";
 				init();
 				insert(first, last);
 			}
 
-			rb_tree (const rb_tree& x): _comp(x._comp), _alloc(x._alloc), _chief(x._chief)
+			rb_tree (const rb_tree& x):  _chief(x._chief), _sentinel(), _size(), _comp(x._comp), _alloc(x._alloc)
 			{
 				init();
 				insert(x.begin(), x.end());
@@ -237,6 +238,7 @@ namespace ft
 				{
 					// std::cout<< "Araaa: " << (*first).first << std::endl;
 					insert(*first);
+					// std::cout << "After insertion, Size: " << _size << std::endl;
 					first++;
 				}
 					
@@ -483,7 +485,10 @@ namespace ft
 
 			const_iterator lower_bound (const key_type& k) const
 			{
-				return const_iterator(lower_bound(k));				//idkkkk how does this work(
+				// return const_iterator(lower_bound(k));				//idkkkk how does this work(
+				iterator	it = static_cast<const rb_tree&>(*this).lower_bound(k);
+				return (iterator(const_cast<rb_base_node*>(it._node)));
+			
 			}
 
 			iterator upper_bound (const key_type& k)
@@ -741,7 +746,7 @@ namespace ft
 	template <class Key, class T, class KeyOfValue, class Compare, class Alloc>  
 	bool operator==(const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& lhs, const rb_tree<Key, T, KeyOfValue, Compare, Alloc>& rhs)
 	{
-			return (equal(lhs.begin(), lhs.rend(), rhs.begin()));
+			return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 	}
 
 	template < class Key, class T, class KeyOfValue, class Compare, class Alloc >  

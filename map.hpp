@@ -55,9 +55,12 @@ namespace ft
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _tree(comp, alloc) {}
 			
 			template <class InputIterator>
-			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _tree(first, last, comp, alloc) {}
+			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _tree(first, last, comp, alloc) 
+			{
+				// std::cout << "Here\n";
+			}
 			
-			map (const map& x) : _tree(x) {}
+			map (const map& x) : _tree(x._tree) {}
 
 			//destructor
 			~map() {}
@@ -173,7 +176,7 @@ namespace ft
 
 			void swap (map& x)
 			{
-				_tree.swap(x);
+				_tree.swap(x._tree);
 			}
 
 			void clear()
@@ -248,6 +251,7 @@ namespace ft
 			private:
 				template <class Key_, class T_, class Compare_, class Alloc_>  
 				friend bool operator==(const map<Key_, T_, Compare_, Alloc_>& lhs, const map<Key_, T_, Compare_, Alloc_>& rhs);
+				
 				template <class Key_, class T_, class Compare_, class Alloc_>  
 				friend bool operator<(const map<Key_, T_, Compare_, Alloc_>& lhs, const map<Key_, T_, Compare_, Alloc_>& rhs);
 	};
@@ -267,13 +271,13 @@ namespace ft
 	template < class Key, class T, class Compare, class Alloc >  
 	bool operator<  (const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 	{
-		return (ft::lexicographical_compare(lhs.begin(), lhs.end(),rhs.begin(), rhs.end()));
+		return (lhs._tree < rhs._tree);
 	}
 	
 	template < class Key, class T, class Compare, class Alloc >  
 	bool operator<=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 	{
-		return !(rhs._tree < lhs._tree);
+		return !(rhs < lhs);
 	}
 	
 	template < class Key, class T, class Compare, class Alloc >  
