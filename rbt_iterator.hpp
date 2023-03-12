@@ -101,7 +101,11 @@ namespace ft
 			rbt_iterator& operator--()
 			{
 				if (!is_internal(_node))
+				{
+					// std::cout << "of esim e\n";
 					_node = _node->p;
+					return (*this);
+				}	
 				if (is_internal(_node->left))
 				{
 					_node = _node->left;

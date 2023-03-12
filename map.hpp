@@ -159,19 +159,19 @@ namespace ft
 				_tree.insert(first, last);
 			}
 
-			void erase (iterator)
+			void erase (iterator position)
 			{
-//iterator position
+				_tree.erase(position);
 			}
 
-			// size_type erase (const key_type& k)
-			// {
-
-			// }
-
-			void erase (iterator, iterator)
+			size_type erase (const key_type& k)
 			{
-//iterator first, iterator last
+				return (_tree.erase(k));
+			}
+
+			void erase (iterator first, iterator last)
+			{
+				_tree.erase(first, last);
 			}
 
 			void swap (map& x)
