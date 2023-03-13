@@ -3,7 +3,7 @@ SRCS = $(wildcard *.cpp)
 #SRCS = rb_tree.hpp
 OBJS = ${SRCS:.cpp=.o}
 CC = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 
 
 all: ${NAME}
 

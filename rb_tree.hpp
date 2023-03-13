@@ -245,6 +245,7 @@ namespace ft
 
 		void erase(iterator position)
 		{
+			// std::cout << "Again here?\n";
 			rb_base_node *z = position._node;
 			rb_base_node *y = z;
 			node_color original_color_y = y->color;
@@ -253,9 +254,11 @@ namespace ft
 			// std::cout << "Cmooon\n";
 			if (position._node == _chief.left)
 			{
-				std::cout << "\nSmallest\n";
+				// std::cout << "\nSmallest\n";
 				_chief.left = (++position)._node;
 				position--;
+				std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
+				std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
 			}
 			if (position._node == _chief.right)
 			{
@@ -267,9 +270,15 @@ namespace ft
 			}
 			if (is_external(z->left))
 			{
-				std::cout << "\n\nHere?\n\n";
+				// std::cout << "\n\nHere?\n\n";
+				// std::cout << "From here?\n";
+				
 				x = z->right;
+				// std::cout << "X value: " << static_cast<rb_node<T> *>(x)->element.first << std::endl;
+
 				rb_transplant(z, z->right);
+				std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
+				std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
 			}
 			else if (is_external(z->right))
 			{
@@ -281,22 +290,38 @@ namespace ft
 				y = tree_min(z->right);
 				original_color_y = y->color;
 				x = y->right;
-				if (y->p == z)
+				// std::cout << "X being internal: " << is_internal(x) << std::endl;
+				if (y->p == z && is_internal(x))
 					x->p = y;
 				else
 				{
 					rb_transplant(y, y->right);
+					// std::cout << "\033[1;31mEND: "<< (*(--end())).first << "\033[0m"<< std::endl;
 					y->right = z->right;
-					y->right->p = y;
+					if (is_internal(y->right))
+						y->right->p = y;
 				}
 				rb_transplant(z, y);
 				y->left = z->left;
 				y->left->p = y;
 				y->color = z->color;
 			}
+			// std::cout << "Size: " << _size << std::endl;
 			_size--;
+			// std::cout << "Internal x-p?: " << is_internal(x->p) << std::endl;
+			// std::cout << "is_root x?: " << is_root(x) << std::endl;
+
+			// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
+			// std::cout << "Size: " << _size << std::endl;
+
+
 			if (original_color_y == BLACK)
+			{
+
+				// std::cout << "here?\n";
 				delete_fixup(x);
+				// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
+			}	
 		}
 
 		size_type erase(const key_type &k) // I was too lazy to think about this easy one
@@ -315,10 +340,26 @@ namespace ft
 
 		void erase(iterator first, iterator last)
 		{
-			while (first != last)
+			// std::cout << "Here?\n";
+			std::cout << "First: "<< (*first).first << std::endl;
+			std::cout << "Last: "<< (*last).first << std::endl;
+			size_t distance = ft::distance(first, last);
+			iterator next = first;
+
+			while (distance > 0)
 			{
+				// std::cout << "Distance: " << distance << "\nDidn't reach here?\n";
+				next++;
+				// std::cout << "Before before\n";
+				std::cout << "\033[1;31mFirst: "<< (*first).first << "\033[0m"<<  std::endl;
+				std::cout << "\033[1;31mNext: "<< (*next).first << "\033[0m" << std::endl;
+
 				erase(first);
-				first++;
+				// std::cout << "Before\n";
+				first = next;
+				// std::cout << "After\n";
+
+				distance--;
 			}
 		}
 
@@ -328,8 +369,13 @@ namespace ft
 			while (!is_root(x) && x->color == BLACK)
 			{
 				rb_base_node *w;
+				// std::cout << "x: " << (static_cast<rb_node<T> *>(x))->element.first << std::endl;
+				// std::cout << "x->p: " << (static_cast<rb_node<T> *>(x->p))->element.first << std::endl;
+				// std::cout << "X->p->left" << static_cast<rb_node<T> *>(x->p->left)->element.first << std::endl;
+
 				if (x == x->p->left)
 				{
+					std::cout << "here?\n";
 					w = x->p->right;
 					if (w->color == RED)
 					{
@@ -465,7 +511,7 @@ namespace ft
 		iterator lower_bound(const key_type &k)
 		{
 			if (empty())
-				return (_sentinel);
+				return (iterator(_sentinel));
 			rb_node<T> *temp(root());
 
 			while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
@@ -491,7 +537,7 @@ namespace ft
 		const_iterator lower_bound(const key_type &k) const
 		{
 			// return const_iterator(lower_bound(k));				//idkkkk how does this work(
-			iterator it = static_cast<const rb_tree &>(*this).lower_bound(k);
+			const_iterator it = static_cast<const rb_tree &>(*this).lower_bound(k);
 			return (iterator(const_cast<rb_base_node *>(it._node)));
 		}
 
@@ -565,7 +611,7 @@ namespace ft
 
 		bool is_root(const rb_base_node *n)
 		{
-			return (n && is_internal(n->p));
+			return (is_internal(n->p));
 		}
 
 		bool is_internal(const rb_base_node *n) const
@@ -732,7 +778,8 @@ namespace ft
 				u->p->left = v;
 			else
 				u->p->right = v;
-			v->p = u->p;
+			if (is_internal(v))
+				v->p = u->p;
 		}
 
 		void destroy_subtree(rb_base_node *x)
