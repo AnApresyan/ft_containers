@@ -257,8 +257,8 @@ namespace ft
 				// std::cout << "\nSmallest\n";
 				_chief.left = (++position)._node;
 				position--;
-				std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
-				std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
+				// std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
+				// std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
 			}
 			if (position._node == _chief.right)
 			{
@@ -277,8 +277,8 @@ namespace ft
 				// std::cout << "X value: " << static_cast<rb_node<T> *>(x)->element.first << std::endl;
 
 				rb_transplant(z, z->right);
-				std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
-				std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
+				// std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
+				// std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
 			}
 			else if (is_external(z->right))
 			{
@@ -321,7 +321,8 @@ namespace ft
 				// std::cout << "here?\n";
 				delete_fixup(x);
 				// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
-			}	
+			}
+			print_tree();
 		}
 
 		size_type erase(const key_type &k) // I was too lazy to think about this easy one
@@ -343,10 +344,10 @@ namespace ft
 			// std::cout << "Here?\n";
 			std::cout << "First: "<< (*first).first << std::endl;
 			std::cout << "Last: "<< (*last).first << std::endl;
-			size_t distance = ft::distance(first, last);
+			// size_t distance = ft::distance(first, last);
 			iterator next = first;
 
-			while (distance > 0)
+			while (next != last)
 			{
 				// std::cout << "Distance: " << distance << "\nDidn't reach here?\n";
 				next++;
@@ -359,7 +360,8 @@ namespace ft
 				first = next;
 				// std::cout << "After\n";
 
-				distance--;
+				// distance--;
+				print_tree(root());
 			}
 		}
 
@@ -791,6 +793,38 @@ namespace ft
 			allocator_type alloc(this->_alloc);
 			alloc.destroy(&static_cast<node *>(x)->element);
 			this->_alloc.deallocate(static_cast<node *>(x), 1);
+		}
+
+		//INORDER -T REE -W ALK .x/
+		void print_tree()
+		{
+			print_tree(root());
+			std::cout << "Smallest: " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
+			std::cout << "Largest: " << (static_cast<rb_node<T> *>(_chief.right))->element.first << std::endl;
+			std::cout << "Sentinel's parent: " << (static_cast<rb_node<T> *>(_sentinel.p))->element.first << std::endl;
+			std::cout << std::endl;
+		}
+		void print_tree(rb_base_node *x)
+		{
+			if (is_internal(x))
+			{
+				print_tree(x->left);
+				std::cout << "Key: " << (static_cast<rb_node<T> *>(x))->element.first << ", Left: ";
+				if (is_internal(x->left))
+					std::cout << (static_cast<rb_node<T> *>(x->left))->element.first;
+				else
+					std::cout << "none";
+				if (is_internal(x->right))
+					std::cout << ", Right: " << (static_cast<rb_node<T> *>(x->right))->element.first;
+				else
+					std::cout << ", Right: none";
+				if (is_internal(x->p))
+					std::cout << ", Parent: " << (static_cast<rb_node<T> *>(x->p))->element.first;
+				else
+					std::cout << ",\033[1;31m ROOT\033[0m";
+				std::cout << std::endl;
+				print_tree(x->right);
+			}
 		}
 	};
 
