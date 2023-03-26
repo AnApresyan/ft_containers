@@ -143,10 +143,12 @@ namespace ft
 		pair<iterator, bool>
 		insert(const value_type &val)
 		{
+			// print_tree_set();
+
 			rb_base_node *y = &_sentinel;
 			rb_base_node *x = root();
 
-			// std::cout << "Here\n";
+			// std::cout << "Inserting: " << val << "\n";
 			if (_size == 0)
 			{
 				rb_node<T> *z = create_node(val);
@@ -161,10 +163,12 @@ namespace ft
 				_size++;
 				// std::cout << "Here\n";
 				// std::cout << _sentinel.left << std::endl;
+				// print_tree_set();
 				return ft::make_pair(iterator(z), true);
 			}
 			while (is_internal(x))
 			{
+				// std::cout << "\033[1;32mHERE\033[0m\n";
 				// std::cout << "internal root\n";
 				// std::cout << "\n\nx: " << (static_cast<const rb_node<T>*>(x))->element.first << std::endl;
 				y = x;
@@ -173,15 +177,24 @@ namespace ft
 					// std::cout << "Here\n";
 					x = x->left;
 				}
-				else
+				else if (_comp(keyof(x), keyof(val)))
 					x = x->right;
+				else
+					break;
 			}
 			if (is_internal(y))
 			{
+				// std::cout << "\033[1;33mHERE\033[0m\n";
 				if (!_comp(keyof(y), keyof(val)) && !_comp(keyof(val), keyof(y)))
+				{
+					// print_tree_set();
 					return (ft::make_pair(iterator(y), false));
+				}
 				if (is_internal(y->p) && !_comp(keyof(y->p), keyof(val)) && !_comp(keyof(val), keyof(y->p)))
+				{
+					// print_tree_set();
 					return (ft::make_pair(iterator(y->p), false));
+				}
 			}
 			rb_node<T> *z = create_node(val);
 			z->p = y;
@@ -222,6 +235,7 @@ namespace ft
 			// std::cout << "The key of begin: " << begin()->first << std::endl;
 			// std::cout << "The key of newly inserted pair: " << z->element.first << std::endl;
 			// std::cout << "The end: " << (*end()).first << std::endl;
+			// print_tree_set();
 			return (ft::make_pair(iterator(z), true));
 		}
 
@@ -350,17 +364,30 @@ namespace ft
 				delete_fixup(x);
 				// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
 			}
+
+			// if (is_internal(z))
+			// {
+				allocator_type	alloc(this->_alloc);
+				alloc.destroy(&static_cast<node *>(z)->element);
+				_alloc.deallocate(static_cast<node *>(z), 1);
+			// }
+			
 			// print_tree();
 		}
 
 		size_type erase(const key_type &k) // I was too lazy to think about this easy one
 		{
 			// std::cout << "Wait: Here?\n";
+			// print_tree_set();
 			iterator low = lower_bound(k);
 			iterator high = upper_bound(k);
 			size_type deletions = 0;
+			// std::cout << "Lower bound: " << (*low) << std::endl;
+			// std::cout << "Upper bound: " << (*high) << std::endl;
+
 			while (low != high)
 			{
+				// std::cout << "Low: " << *low << std::endl;
 				erase(low++);
 				deletions++;
 			}
@@ -515,10 +542,10 @@ namespace ft
 		// Operations
 		const_iterator find(const key_type &k) const
 		{
+			// print_tree_set();
 			if (empty())
 				return (const_iterator(&_sentinel));
 			rb_base_node *temp(root());
-
 			while (is_internal(temp) && (_comp(keyof(temp), k) || _comp(k, keyof(temp))))
 			{
 				if (_comp(k, keyof(temp)))
@@ -526,8 +553,11 @@ namespace ft
 				else
 					temp = temp->right;
 			}
-			if (!_comp(keyof(temp), k) && !_comp(k, keyof(temp)))
+			//std::cout << "Temp: " << static_cast<node *>(temp)->element << std::endl;
+			// std::cout << "Is external temp: " << is_external(temp) << std::endl;
+			if (is_internal(temp) && !_comp(keyof(temp), k) && !_comp(k, keyof(temp)))
 				return (const_iterator(temp));
+			// std::cout << "Hello\n";
 			return (end());
 		}
 
@@ -600,6 +630,7 @@ namespace ft
 			}
 			if (_comp(k, keyof(temp)))
 				return const_iterator(temp);
+			// std::cout << "Temp: " << static_cast<node *>(temp)->element << std::endl;
 			return ++const_iterator(temp);
 		}
 
@@ -669,7 +700,10 @@ namespace ft
 		bool is_external(const rb_base_node *n) const
 		{
 			// return (!n || n == &_sentinel);
-			return (!n || (!n->left && !n->right));
+			// if (!n->right)
+			// 	std::cout << "Internal?\n";
+
+			return (!n || (n && !n->left && !n->right));
 		}
 
 		bool is_chief(const rb_base_node *n)
@@ -790,9 +824,10 @@ namespace ft
 
 		rb_node<T> *create_node(const value_type &val) // taken from Alex :DDDDDDDDDD
 		{
-			rb_node<T> *new_node = this->_alloc.allocate(1);
+			rb_node<T> *new_node;
 			try
 			{
+				new_node = this->_alloc.allocate(1);
 				allocator_type alloc(this->_alloc);
 				alloc.construct(&new_node->element, val);
 			}
@@ -870,6 +905,44 @@ namespace ft
 					std::cout << ",\033[1;31m ROOT\033[0m";
 				std::cout << std::endl;
 				print_tree(x->right);
+			}
+		}
+
+		void print_tree_set() const
+		{
+			// std::cout << "What's going on?\n";
+			if (size() > 0)
+			{
+				print_tree_set(root());
+				std::cout << "Smallest: " << (static_cast<rb_node<T> *>(_chief.left))->element << std::endl;
+				std::cout << "Largest: " << (static_cast<rb_node<T> *>(_chief.right))->element << std::endl;
+				std::cout << "Sentinel's parent: " << (static_cast<rb_node<T> *>(_sentinel.p))->element << std::endl;
+				std::cout << "Size: " << size() << std::endl;
+				std::cout << std::endl;
+			}
+		}
+		void print_tree_set(rb_base_node *x) const
+		{
+			// std::cout << "Is internal x? " << is_internal(x) << std::endl;
+			if (is_internal(x))
+			{
+				// std::cout << "Here?\n";
+				print_tree_set(x->left);
+				std::cout << "Key: " << (static_cast<rb_node<T> *>(x))->element << ", Left: ";
+				if (is_internal(x->left))
+					std::cout << (static_cast<rb_node<T> *>(x->left))->element;
+				else
+					std::cout << "none";
+				if (is_internal(x->right))
+					std::cout << ", Right: " << (static_cast<rb_node<T> *>(x->right))->element;
+				else
+					std::cout << ", Right: none";
+				if (is_internal(x->p))
+					std::cout << ", Parent: " << (static_cast<rb_node<T> *>(x->p))->element;
+				else
+					std::cout << ",\033[1;31m ROOT\033[0m";
+				std::cout << std::endl;
+				print_tree_set(x->right);
 			}
 		}
 	};

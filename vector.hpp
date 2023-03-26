@@ -45,25 +45,30 @@ namespace ft
 					for (; i < n; i++)
 						push_back(val);
 				}
-				catch(std::exception &e)
+				catch(...)
 				{	
 					this->clear();
 					this->_alloc.deallocate(this->_arr, i);
-					throw e;
+					// std::cout << "Here?\n";
+					throw ;
 				}
 			}
 
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _size(0), _capacity(ft::distance(first, last)), _alloc(alloc)
+					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _size(0), _capacity(0), _alloc(alloc)
 			{
+				//_capacity(ft::distance(first, last))
+				// std::cout << "Here?\n";
 				try 
 				{
-					if (capacity() > max_size())
-						throw std::length_error("Exceeds max size.");
-					_arr = _alloc.allocate(_capacity);
+					// if (capacity() > max_size())
+					// 	throw std::length_error("Exceeds max size.");
+					// _arr = _alloc.allocate(_capacity);
 					for (; first != last; ++first)
+					{
 						push_back(*first);
+					}
 				} 
 				catch (std::exception &e) 
 				{

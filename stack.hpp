@@ -9,9 +9,11 @@ namespace ft
 	class stack
 	{
 		public:
-			typedef T 			value_type;
-			typedef Container	container_type;
-			typedef size_t		size_type;
+			typedef T 					value_type;
+			typedef Container			container_type;
+			typedef size_t				size_type;
+			typedef value_type			&reference;
+			typedef const value_type	&const_reference;
 		
 			explicit stack (const container_type &ctnr = container_type()): _container(ctnr) {}
 			

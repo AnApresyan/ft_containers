@@ -132,6 +132,22 @@ namespace ft
 				return (*(this->insert(ft::make_pair(k,mapped_type())).first)).second;
 			}
 
+			mapped_type& at (const key_type& k)
+			{
+				iterator it = find(k);
+				if (it == end())
+					throw std::out_of_range("Key not found");
+				return it->second;
+			}
+			
+			const mapped_type& at (const key_type& k) const
+			{
+				const_iterator it = find(k);
+				if (it == end())
+					throw std::out_of_range("Key not found");
+				return it->second;
+			}
+
 			//don't I need at?
 
 			//modifiers
@@ -252,6 +268,13 @@ namespace ft
 				template <class Key_, class T_, class Compare_, class Alloc_>  
 				friend bool operator<(const map<Key_, T_, Compare_, Alloc_>& lhs, const map<Key_, T_, Compare_, Alloc_>& rhs);
 	};
+
+	template <class Key, class T, class Compare, class Alloc>
+	void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y)
+	{
+		x.swap(y);
+	}
+
 
 	template <class Key, class T, class Compare, class Alloc>  
 	bool operator==(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)

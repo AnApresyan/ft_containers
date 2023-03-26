@@ -5,21 +5,53 @@
 #include "rb_tree.hpp"
 #include "rbt_helper.hpp"
 #include "map.hpp"
+#include "set.hpp"
+#include <sstream>
+#include "vector.hpp"
 
 
 int main()
 {
-    ft::pair<int, char> p1(10, 'a');
+    //Works with input iterators
+    // std::istringstream str("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    // std::istreambuf_iterator<char> it(str), end;
 
-    ft::map<int, char> map;
+    // ft::vector<char> v(it, end);
+    // std::cout << "Size: " << v.size() << std::endl;
 
-    map.insert(p1);
+    //Vector length exceeding max size
+    ft::vector<int> v;
+    std::cout << "Max size: " << v.max_size() << std::endl;
 
-    for (ft::rbt_iterator<ft::pair<const int, char> > it = map.begin(); it != map.end(); it++)
-    {
-        std::cout << it->first << std::endl;
+    ft::vector<int> another(v.max_size() + 1);
 
-    }    
+
+    // std::string str_arr[7] = {"QE", "na", "25", "tS", "7Z", "Wh", "8v"};
+
+    // ft::set<std::string> m(str_arr, str_arr + 6);
+    // for (ft::set<std::string>::iterator it = m.begin(); it != m.end(); it++)
+    // {
+    //     std::cout << *it << std::endl;
+    // }
+    // ft::set<std::string> m;
+
+    // m.insert("QE");
+    // ft::set<std::string>::iterator it = m.find("ABCD");
+    // m.insert("QE");
+
+
+
+    // ft::pair<int, char> p1(10, 'a');
+
+    // ft::map<int, char> map;
+
+    // map.insert(p1);
+
+    // for (ft::rbt_iterator<ft::pair<const int, char> > it = map.begin(); it != map.end(); it++)
+    // {
+    //     std::cout << it->first << std::endl;
+
+    // }    
 
     // ft::pair<int, char> p2(12, 'b');
     // ft::pair<int, char> p3(9, 'c');

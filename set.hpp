@@ -38,7 +38,10 @@ namespace ft
 			set (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _tree(first, last, comp, alloc) {}
 			set (const set& x): _tree(x._tree) {}
 			
-			~set() {}
+			~set() 
+			{
+				clear();
+			}
 
 			set& operator= (const set& x)
 			{
@@ -217,6 +220,12 @@ namespace ft
 				template <class T_, class Compare_, class Alloc_>  
 				friend bool operator<(const set<T_, Compare_, Alloc_>& lhs, const set<T_, Compare_, Alloc_>& rhs);
 	};
+
+	template <class T, class Compare, class Alloc> 
+	void swap (set<T,Compare,Alloc>& x, set<T,Compare,Alloc>& y)
+	{
+		x.swap(y);
+	}
 
 	template <class T, class Compare, class Alloc>  
 	bool operator==(const set<T, Compare, Alloc>& lhs, const set<T, Compare, Alloc>& rhs)

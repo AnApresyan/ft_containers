@@ -87,7 +87,7 @@ namespace ft
 					}
 				}
 				else
-					_node = _node->left;
+					_node = _node->right;
 				return (*this);
 			}
 
@@ -228,6 +228,7 @@ namespace ft
 				// std::cout << (static_cast<const rb_node<T>*>(_node->p))->element.first;
 				if (is_internal(_node->right))
 				{
+					// std::cout << "?\n"; 
 					_node = _node->right;
 					while (is_internal(_node->left))
 						_node = _node->left;
@@ -254,6 +255,7 @@ namespace ft
 				{
 					// std::cout << "of de aman esim e 2.0\n";
 					_node = _node->right;
+					// std::cout << "Is internal? " << is_internal(_node) << std::endl;
 				}
 				return (*this);
 			}
