@@ -55,10 +55,7 @@ namespace ft
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _tree(comp, alloc) {}
 			
 			template <class InputIterator>
-			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _tree(first, last, comp, alloc) 
-			{
-				// std::cout << "Here\n";
-			}
+			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : _tree(first, last, comp, alloc) {}
 			
 			map (const map& x) : _tree(x._tree) {}
 

@@ -37,9 +37,11 @@ namespace ft
 			{
 				size_type i = 0;
 
-				_arr = _alloc.allocate(n);
 				try
 				{
+					if (n > max_size())
+						throw std::length_error("Exceeds max size.");
+					_arr = _alloc.allocate(n);
 					for (; i < n; i++)
 						push_back(val);
 				}
@@ -57,6 +59,8 @@ namespace ft
 			{
 				try 
 				{
+					if (capacity() > max_size())
+						throw std::length_error("Exceeds max size.");
 					_arr = _alloc.allocate(_capacity);
 					for (; first != last; ++first)
 						push_back(*first);
@@ -74,6 +78,11 @@ namespace ft
 				this->_arr = this->_alloc.allocate(_capacity);
 				while (this->_size != other._size)
 					push_back(other[this->_size]);
+			}
+
+			~vector() 
+			{
+				clear_deallocate();
 			}
 
 			vector& operator= (const vector& other)
@@ -340,6 +349,19 @@ namespace ft
 			void clear() 
 			{
 				this->erase(this->begin(), this->end());
+			}
+			
+			allocator_type get_allocator() const
+			{
+				return (_alloc);
+			}
+		private:
+			void clear_deallocate()
+			{
+				clear();
+				if (_arr)
+					this->_alloc.deallocate(_arr, capacity());
+				
 			}
 
 		private:

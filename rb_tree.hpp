@@ -86,12 +86,20 @@ namespace ft
 		iterator end()
 		{
 			// std::cout << &_sentinel << std::endl;
-			return iterator(&_sentinel);
+			// return iterator(&_sentinel);
+			// if (_size == 0)
+			// 	return iterator(_chief.left);
+			// return iterator(_chief.p->p);
+			return iterator(sentinel());
 		}
 
 		const_iterator end() const
 		{
-			return const_iterator(&_sentinel);
+			// return const_iterator(&_sentinel);
+			// if (_size == 0)
+			// 	return const_iterator(_chief.left);
+			// return const_iterator(_chief.p->p);
+			return const_iterator(sentinel());
 		}
 
 		reverse_iterator rbegin()
@@ -217,6 +225,11 @@ namespace ft
 			return (ft::make_pair(iterator(z), true));
 		}
 
+		iterator insert(const_iterator it, const value_type &val)
+		{
+			return (insert(iterator(const_cast<rb_base_node*>(it._node)), val));
+		}
+
 		iterator insert(iterator, const value_type &val)
 		{
 			// iterator position
@@ -241,6 +254,11 @@ namespace ft
 				// std::cout << "After insertion, Size: " << _size << std::endl;
 				first++;
 			}
+		}
+
+		void erase(const_iterator position)
+		{
+			erase(iterator(const_cast<rb_base_node*>(position._node)));
 		}
 
 		void erase(iterator position)
@@ -347,6 +365,11 @@ namespace ft
 				deletions++;
 			}
 			return (deletions);
+		}
+
+		void erase(const_iterator first, const_iterator last)
+		{
+			erase(iterator(const_cast<rb_base_node*>(first._node)), iterator(const_cast<rb_base_node*>(last._node)));
 		}
 
 		void erase(iterator first, iterator last)
@@ -466,11 +489,12 @@ namespace ft
 		// }
 		void swap(rb_tree &x)
 		{
-			ft::sswap(_sentinel, x._sentinel);
+			// ft::sswap(_sentinel, x._sentinel);
 			ft::sswap(_chief, x._chief);
+			ft::sswap(_sentinel, x._sentinel);
 			ft::sswap(_size, x._size);
-			ft::sswap(_alloc, x._alloc);
-			ft::sswap(_comp, x._comp);
+			// ft::sswap(_alloc, x._alloc);
+			// ft::sswap(_comp, x._comp);
 		}
 
 		void clear()
@@ -502,7 +526,7 @@ namespace ft
 				else
 					temp = temp->right;
 			}
-			if (_comp(keyof(temp), k) || _comp(k, keyof(temp)))
+			if (!_comp(keyof(temp), k) && !_comp(k, keyof(temp)))
 				return (const_iterator(temp));
 			return (end());
 		}
@@ -574,6 +598,8 @@ namespace ft
 					temp = temp->right;
 				}
 			}
+			if (_comp(k, keyof(temp)))
+				return const_iterator(temp);
 			return ++const_iterator(temp);
 		}
 
@@ -608,6 +634,13 @@ namespace ft
 
 	private:
 		// helper functions
+		rb_base_node *sentinel() const
+		{
+			if (_size == 0)
+				return _chief.left;
+			return _chief.p->p;
+		}
+
 		rb_node<T> *min()
 		{
 			return (_chief.left);
@@ -635,7 +668,8 @@ namespace ft
 
 		bool is_external(const rb_base_node *n) const
 		{
-			return (!n || n == &_sentinel);
+			// return (!n || n == &_sentinel);
+			return (!n || (!n->left && !n->right));
 		}
 
 		bool is_chief(const rb_base_node *n)
@@ -808,7 +842,7 @@ namespace ft
 		}
 
 		//INORDER -T REE -W ALK .x/
-		void print_tree()
+		void print_tree() const
 		{
 			print_tree(root());
 			std::cout << "Smallest: " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
@@ -816,7 +850,7 @@ namespace ft
 			std::cout << "Sentinel's parent: " << (static_cast<rb_node<T> *>(_sentinel.p))->element.first << std::endl;
 			std::cout << std::endl;
 		}
-		void print_tree(rb_base_node *x)
+		void print_tree(rb_base_node *x) const
 		{
 			if (is_internal(x))
 			{

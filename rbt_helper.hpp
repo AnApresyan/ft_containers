@@ -12,6 +12,7 @@ namespace ft
 		typedef Result result_type;
 	};
 
+
 	template <class T> struct less : binary_function <T,T,bool> {
 	bool operator() (const T& x, const T& y) const {return x<y;}
 	};
@@ -26,6 +27,21 @@ namespace ft
 		typedef Arg		argument_type;   
 		typedef Result	result_type;  
 	};
+
+	template <class T> struct same : unary_function <T,T> 
+	{
+		T &operator() (T& x)
+		{
+			return x;
+		}
+
+		const T &operator() (const T& x) const 
+		{
+			return x;
+		}
+	};
+
+
 	template <class Pair>
 	struct select_1st : public unary_function<Pair, typename Pair::first_type>
 	{
