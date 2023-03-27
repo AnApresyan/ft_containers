@@ -20,10 +20,47 @@ int main()
     // std::cout << "Size: " << v.size() << std::endl;
 
     //Vector length exceeding max size
-    ft::vector<int> v;
-    std::cout << "Max size: " << v.max_size() << std::endl;
+    // ft::vector<int> v;
+    // std::cout << "Max size: " << v.max_size() << std::endl;
 
-    ft::vector<int> another(v.max_size() + 1);
+    // ft::vector<int> another(v.max_size() + 1);
+
+
+    //Deallocating non-allocated memory
+    // std::istringstream str("");
+    // std::istreambuf_iterator<char> it(str), end;
+
+    // ft::vector<char> v(it, end);
+
+    //Memory leak in vector
+    ft::vector<int> v;
+
+    // v.insert(v.end(), 10, 64);
+        // v.insert(v.begin(), 0, 64);
+
+        // // CHECK_AND_PRINT_ALL(v);
+
+        // v.insert(v.end(), 0, 64);
+
+        // CHECK_AND_PRINT_ALL(v);
+
+        v.insert(v.end(), 10, 64);
+
+        // CHECK_AND_PRINT_ALL(v);
+
+        // v.insert(v.begin(), 5, -1);
+
+        // // CHECK_AND_PRINT_ALL(v);
+
+        // v.insert(v.begin() + 1, 1, -9);
+
+        // CHECK_AND_PRINT_ALL(v);
+
+        v.insert(v.begin() + 7, 9, 88);
+        std::cout << "Begin: " << *v.begin() << std::endl;
+        for (ft::vector<int>::iterator it = v.begin(); it != v.end(); it++)
+            std::cout << *it << std::endl;
+        std::cout << "Size: " << v.size() << std::endl;
 
 
     // std::string str_arr[7] = {"QE", "na", "25", "tS", "7Z", "Wh", "8v"};

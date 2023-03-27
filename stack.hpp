@@ -16,7 +16,7 @@ namespace ft
 			typedef const value_type	&const_reference;
 		
 			explicit stack (const container_type &ctnr = container_type()): _container(ctnr) {}
-			
+
 			bool empty() const
 			{
 				return (_container.empty());

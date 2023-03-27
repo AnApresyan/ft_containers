@@ -33,7 +33,7 @@ namespace ft
 			explicit vector (const allocator_type& alloc = allocator_type()): _arr(NULL), _size(0), _capacity(0), _alloc(alloc){}
 
 			
-			explicit vector (size_type n, const value_type& val = value_type(),const allocator_type& alloc = allocator_type()): _size(0), _capacity(n), _alloc(alloc)
+			explicit vector (size_type n, const value_type& val = value_type(),const allocator_type& alloc = allocator_type()): _size(0), _capacity(0), _alloc(alloc)
 			{
 				size_type i = 0;
 
@@ -41,14 +41,17 @@ namespace ft
 				{
 					if (n > max_size())
 						throw std::length_error("Exceeds max size.");
-					_arr = _alloc.allocate(n);
+					// _arr = _alloc.allocate(n);
 					for (; i < n; i++)
 						push_back(val);
 				}
 				catch(...)
 				{	
+					// std::cout << "Reached here\n";
 					this->clear();
-					this->_alloc.deallocate(this->_arr, i);
+					// if (n <= max_size())
+					if (_capacity > 0)
+						this->_alloc.deallocate(this->_arr, i);
 					// std::cout << "Here?\n";
 					throw ;
 				}
@@ -72,10 +75,17 @@ namespace ft
 				} 
 				catch (std::exception &e) 
 				{
-					this->clear();
-					this->_alloc.deallocate(this->_arr, _size);
+
+					// std::cout << "?\n";
+					// if (_capacity > 0)
+					// {
+						this->clear();
+					if (_capacity > 0)
+						this->_alloc.deallocate(this->_arr, _capacity);
+					// }
 					throw e;
 				}
+				// std::cout << "Not throwing exception\n";
 			}
 
 			vector(const vector &other): _size(0),  _capacity(other._capacity), _alloc(other._alloc)
@@ -151,7 +161,10 @@ namespace ft
 				if (n > _size)
 				{
 					while (n > _capacity)
-						reserve(2 * _capacity);
+						if (_capacity == 0)
+							reserve(18);
+						else
+							reserve(2 * _capacity);
 					insert(iterator(end()), n - _size, val);
 				}
 			}
@@ -181,24 +194,26 @@ namespace ft
 					pointer 	temp;
 					size_type	i;
 
-					// try
-					// {
+					try
+					{
 						temp = _alloc.allocate(n);
 						for (i = 0; i < _size; i++)
 						{	_alloc.construct(temp + i, _arr[i]);
 							_alloc.destroy(_arr + i);		//if try catch needed move to the bottom
 						}
-					// }
-					// catch(...)
-					// {
-					// 	for (size_type j = 0; j < i; j++)
-					// 		_alloc.destroy(_alloc.address(temp + i));
-					// 	_alloc.deallocate(temp, n);
-					// }
+						if (_capacity > 0)
+							_alloc.deallocate(_arr, _capacity);
+						_capacity = n;
+						_arr = temp;
+					}
+					catch(...)
+					{
+						for (size_type j = 0; j < i; j++)
+							_alloc.destroy(_alloc.address(*(temp + j)));
+						_alloc.deallocate(temp, n);
+						throw ;
+					}
 					// for (i = 0; i < _size; i++)
-					_alloc.deallocate(_arr, _capacity);
-					_capacity = n;
-					_arr = temp;
 				}
 			}
 
@@ -261,6 +276,7 @@ namespace ft
 			void assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)		//probably enable if the iterator is input iterator
 			{
 				clear();
+
 				// std::cout << "\n\nPRINTING IN ASSIGN\n\n";
 				// for (iterator it = begin(); it != end(); it++)
 				// 	std::cout << *it << std::endl;
@@ -295,24 +311,87 @@ namespace ft
 
 			iterator insert(iterator position, const T& val) 
 			{
+				// bool esim = position == end();
+				// std::cout << "Position is end: " << esim << std::endl;
 				size_t offset = position - begin();
-				value_type copy = val;
+				value_type copy = val;	
 				push_back(copy);
+				position = begin() + offset;
+				// if (size() == 19)
+				// {
+				// 	std::cout << "After pushing\n";
+				// 	for (iterator it = begin(); it != position; it++)
+				// 		std::cout << *it << " ";
+				// 	std::cout << std::endl;
+				// }
+				// if (size() == 19)
+				// {
+
+				// }
 				if (this->size() == 1)
 					return this->begin();
 				if (offset == _size - 1)
 					return begin() + offset;
+				// if (size() == 19)
+				// 	std::cout << "Begin: " << *begin() << std::endl;
+				// if (size() == 19)
+				// {
+				// 	std::cout << "THE CONTENT\n";
+				// 	for (iterator it = begin(); it != end(); it++)
+				// 		std::cout << *it << std::endl;
+				// 	std::cout << "THE END\n";
+				// }
 				for (iterator it = end() - 1; it != position; it--)
+				{
+					// if (size() == 19)
+					// {
+					// 	std::cout << "Old it: " << *it << ",  ";
+					// }
 					*it = *(it - 1);
+					// if (size() == 19)
+					// {
+					// 	std::cout << "New it: " << *it << "\n";
+					// }
+				}
 				*position = copy;
 				return begin() + offset;
     		}
 
 			void insert(iterator position, size_type n, const T& val)
 			{
+				if (n + size() > max_size())
+					throw std::length_error("More than the max size\n");
 				value_type copy = val;
+				// if (position == end() && size() == 0)
+				// {
+				// 	std::cout << "OFFSET: \n";
+				// 	position = begin();
+
+				// }
 				while (n-- > 0)
-					insert(position++, copy);
+				{
+					// std::cout << "Stuck here\n";
+					position = insert(position, copy);
+					// if (size() == 18)
+					// {
+					// 	std::cout << "before incrementing\n";
+					// 	for (iterator it = begin(); it != position; it++)
+					// 		std::cout << *it << " ";
+					// 	std::cout << std::endl;
+					// }
+					// std::cout << "Just inserted: " << *position << std::endl;
+					// std::cout << "Begin: " << *begin() << std::endl;
+					// std::cout << "Size: " << size() << std::endl;
+					// std::cout << std::endl;
+					position++;
+					// if (size() == 18)
+					// {
+					// 	std::cout << "After incrementing\n";
+					// 	for (iterator it = begin(); it != position; it++)
+					// 		std::cout << *it << " ";
+					// 	std::cout << std::endl;
+					// }
+				}	
    			}
 
 			template <class InputIterator>
@@ -342,7 +421,7 @@ namespace ft
 			{
 				int count = last - first;
 				size_type ret = first - begin();
-				
+					
 				while (last != end())
 					*(first++) = *(last++);
 				_size -= count;
@@ -363,10 +442,16 @@ namespace ft
 		private:
 			void clear_deallocate()
 			{
-				clear();
-				if (_arr)
+				// if (capacity() > 0)
+				// {
+					// std::cout << "Enters here?\n";
+					clear();
+				// }
+				if (_capacity > 0)
+				{
+					// std::cout << "Here\n";
 					this->_alloc.deallocate(_arr, capacity());
-				
+				}
 			}
 
 		private:
@@ -376,6 +461,12 @@ namespace ft
 			allocator_type	_alloc;
 
 	};
+
+	template<class T, class Alloc>
+	void swap (ft::vector<T, Alloc>& x, ft::vector<T, Alloc>& y)
+	{
+		x.swap(y);
+	}
 
 	template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
