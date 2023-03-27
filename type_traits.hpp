@@ -14,11 +14,11 @@ namespace ft
 	typedef integral_constant<bool,true> true_type;
 	typedef integral_constant<bool,false> false_type;
 
+	// template <> struct is_integral<char16_t> : true_type {};
+	// template <> struct is_integral<char32_t> : true_type {};
 	template<typename T> struct is_integral : false_type {};
 	template <> struct is_integral<bool> : true_type {};
 	template <> struct is_integral<char> : true_type {};
-	// template <> struct is_integral<char16_t> : true_type {};
-	// template <> struct is_integral<char32_t> : true_type {};
 	template <> struct is_integral<wchar_t> : true_type {};
 	template <> struct is_integral<signed char> : true_type {};
 	template <> struct is_integral<short int> : true_type {};
