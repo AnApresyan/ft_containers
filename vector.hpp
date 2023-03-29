@@ -163,11 +163,11 @@ namespace ft
 						pop_back();
 				if (n > _size)
 				{
-					while (n > _capacity)
-						if (_capacity == 0)
-							reserve(18);
-						else
-							reserve(2 * _capacity);
+					// while (n > _capacity)
+					// 	if (_capacity == 0)
+					// 		reserve(18);
+					// 	else
+					// 		reserve(2 * _capacity);
 					insert(iterator(end()), n - _size, val);
 				}
 			}
@@ -192,6 +192,8 @@ namespace ft
 
 			void reserve (size_type n)
 			{
+				if (n > max_size())
+					throw std::length_error("Length error.");
 				if (n > _capacity)
 				{
 					pointer 	temp;
@@ -363,7 +365,7 @@ namespace ft
 			void insert(iterator position, size_type n, const T& val)
 			{
 				if (n + size() > max_size())
-					throw std::length_error("More than the max size\n");
+					throw std::length_error("More than the max size.");
 				value_type copy = val;
 				// if (position == end() && size() == 0)
 				// {
