@@ -2,6 +2,7 @@
 # define STACK_HPP
 
 # include "vector.hpp"
+// # include <vector>
 
 namespace ft
 {
@@ -34,7 +35,7 @@ namespace ft
 
 			const value_type& top() const
 			{
-				return (_container[size() - 1]);
+				return (_container.back());
 			}
 
 			void push (const value_type& val)

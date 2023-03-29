@@ -8,10 +8,25 @@
 #include "set.hpp"
 #include <sstream>
 #include "vector.hpp"
+#include "stack.hpp"
 
 
 int main()
 {
+    //1 leak in the stack
+    
+    // std::cout << "Size: " << st.size() << std::endl;
+    ft::vector<char> v;
+    std::vector<char> v1;
+
+    std::cout << "ft::vector max_size: " << v.max_size() << std::endl;
+    std::cout << "std::vector max_size: " << v1.max_size() << std::endl;
+
+    std::cout << "Size max: " << SIZE_MAX << std::endl;
+    std::cout << "ptrdiff_t: " << PTRDIFF_MAX << std::endl;
+
+
+
     //Works with input iterators
     // std::istringstream str("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     // std::istreambuf_iterator<char> it(str), end;
@@ -33,7 +48,7 @@ int main()
     // ft::vector<char> v(it, end);
 
     //Memory leak in vector
-    ft::vector<int> v;
+    // ft::vector<int> v;
 
     // v.insert(v.end(), 10, 64);
         // v.insert(v.begin(), 0, 64);
@@ -44,7 +59,7 @@ int main()
 
         // CHECK_AND_PRINT_ALL(v);
 
-        v.insert(v.end(), 10, 64);
+        // v.insert(v.end(), 10, 64);
 
         // CHECK_AND_PRINT_ALL(v);
 
@@ -56,11 +71,11 @@ int main()
 
         // CHECK_AND_PRINT_ALL(v);
 
-        v.insert(v.begin() + 7, 9, 88);
-        std::cout << "Begin: " << *v.begin() << std::endl;
-        for (ft::vector<int>::iterator it = v.begin(); it != v.end(); it++)
-            std::cout << *it << std::endl;
-        std::cout << "Size: " << v.size() << std::endl;
+        // v.insert(v.begin() + 7, 9, 88);
+        // std::cout << "Begin: " << *v.begin() << std::endl;
+        // for (ft::vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        //     std::cout << *it << std::endl;
+        // std::cout << "Size: " << v.size() << std::endl;
 
 
     // std::string str_arr[7] = {"QE", "na", "25", "tS", "7Z", "Wh", "8v"};

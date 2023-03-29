@@ -10,27 +10,31 @@ namespace ft
 		typedef integral_constant<T,v> type;
 		operator T() { return v; }
 	};
-
+	
 	typedef integral_constant<bool,true> true_type;
 	typedef integral_constant<bool,false> false_type;
 
-	// template <> struct is_integral<char16_t> : true_type {};
-	// template <> struct is_integral<char32_t> : true_type {};
-	template<typename T> struct is_integral : false_type {};
-	template <> struct is_integral<bool> : true_type {};
-	template <> struct is_integral<char> : true_type {};
-	template <> struct is_integral<wchar_t> : true_type {};
-	template <> struct is_integral<signed char> : true_type {};
-	template <> struct is_integral<short int> : true_type {};
-	template <> struct is_integral<int> : true_type {};
-	template <> struct is_integral<long int> : true_type {};
-	template <> struct is_integral<long long int> : true_type {};
-	template <> struct is_integral<unsigned char> : true_type {};
-	template <> struct is_integral<unsigned short int> : true_type {};
-	template <> struct is_integral<unsigned int> : true_type {};
-	template <> struct is_integral<unsigned long int> : true_type {};
-	template <> struct is_integral<unsigned long long int> : true_type {};
+	template< class T > struct remove_cv                   { typedef T type; };
+	template< class T > struct remove_cv<const T>          { typedef T type; };
+	template< class T > struct remove_cv<volatile T>       { typedef T type; };
+	template< class T > struct remove_cv<const volatile T> { typedef T type; };
 
+	template<typename> struct is_integral_base : false_type {};
+	template <> struct is_integral_base<bool> : true_type {};
+	template <> struct is_integral_base<char> : true_type {};
+	template <> struct is_integral_base<wchar_t> : true_type {};
+	template <> struct is_integral_base<signed char> : true_type {};
+	template <> struct is_integral_base<short int> : true_type {};
+	template <> struct is_integral_base<int> : true_type {};
+	template <> struct is_integral_base<long int> : true_type {};
+	template <> struct is_integral_base<long long int> : true_type {};
+	template <> struct is_integral_base<unsigned char> : true_type {};
+	template <> struct is_integral_base<unsigned short int> : true_type {};
+	template <> struct is_integral_base<unsigned int> : true_type {};
+	template <> struct is_integral_base<unsigned long int> : true_type {};
+	template <> struct is_integral_base<unsigned long long int> : true_type {};
+
+	template<typename T> struct is_integral: is_integral_base<typename remove_cv<T>::type> {};
 
 	//ENABLE IF
 	template<bool B, typename T = void>
@@ -41,6 +45,8 @@ namespace ft
 	{
 		typedef T type;
 	};
+
+
 }
 
 #endif

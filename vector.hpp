@@ -30,7 +30,9 @@ namespace ft
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 			typedef size_t size_type;
 
-			explicit vector (const allocator_type& alloc = allocator_type()): _arr(NULL), _size(0), _capacity(0), _alloc(alloc){}
+			explicit vector (const allocator_type& alloc = allocator_type()): _arr(), _size(0), _capacity(0), _alloc(alloc){
+				// std::cout << "In constructor: " << _arr << std::endl;
+			}
 
 			
 			explicit vector (size_type n, const value_type& val = value_type(),const allocator_type& alloc = allocator_type()): _size(0), _capacity(0), _alloc(alloc)
@@ -88,9 +90,10 @@ namespace ft
 				// std::cout << "Not throwing exception\n";
 			}
 
-			vector(const vector &other): _size(0),  _capacity(other._capacity), _alloc(other._alloc)
+			vector(const vector &other): _size(0),  _capacity(0), _alloc(other._alloc)
 			{
-				this->_arr = this->_alloc.allocate(_capacity);
+				// this->_arr = this->_alloc.allocate(_capacity);
+				// std::cout << "Copy constructor: " << _arr << std::endl;
 				while (this->_size != other._size)
 					push_back(other[this->_size]);
 			}
@@ -148,7 +151,7 @@ namespace ft
 			}
 			size_type max_size() const
 			{
-				return _alloc.max_size();
+				return static_cast<size_type>(std::numeric_limits<ptrdiff_t>::max()) < this->_alloc.max_size() ? static_cast<size_type>(std::numeric_limits<ptrdiff_t>::max()) : this->_alloc.max_size();
 			}
 			
 			void resize (size_type n, value_type val = value_type())
@@ -232,14 +235,14 @@ namespace ft
 			{
 				if (n < _size)
 					return _arr[n];
-				throw std::out_of_range("Given index is out of range");
+				throw std::out_of_range("Given index is out of range.");
 			}
 
 			const_reference at (size_type n) const
 			{
 				if (n < _size)
 					return _arr[n];
-				throw std::out_of_range("Given index is out of range");
+				throw std::out_of_range("Given index is out of range.");
 			}
 
 			reference front()
@@ -421,7 +424,7 @@ namespace ft
 			{
 				int count = last - first;
 				size_type ret = first - begin();
-					
+				
 				while (last != end())
 					*(first++) = *(last++);
 				_size -= count;
@@ -447,6 +450,7 @@ namespace ft
 					// std::cout << "Enters here?\n";
 					clear();
 				// }
+				// std::cout << _arr << std::endl;
 				if (_capacity > 0)
 				{
 					// std::cout << "Here\n";
@@ -459,7 +463,6 @@ namespace ft
 			size_type		_size;
 			size_type		_capacity;
 			allocator_type	_alloc;
-
 	};
 
 	template<class T, class Alloc>

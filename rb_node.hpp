@@ -1,5 +1,6 @@
 #ifndef RB_NODE_HPP
 #define RB_NODE_HPP
+#include <cstdio>
 
 namespace ft
 {
