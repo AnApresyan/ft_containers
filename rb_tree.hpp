@@ -33,7 +33,7 @@ namespace ft
 
 	private:
 		typedef rb_node<T> node;
-		typedef typename Alloc::template rebind<node>::other node_allocator_type; // what is thisss????
+		typedef typename Alloc::template rebind<node>::other node_allocator_type;
 
 		rb_base_node _chief;
 		rb_base_node _sentinel;
@@ -51,7 +51,6 @@ namespace ft
 		template <class InputIterator>
 		rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : _chief(), _sentinel(), _size(), _comp(comp), _alloc(alloc)
 		{
-			// std::cout << "Also here?\n";
 			init();
 			insert(first, last);
 		}
@@ -66,7 +65,6 @@ namespace ft
 		rb_tree &operator=(const rb_tree &x)
 		{
 			clear();
-			// init(); //?
 			insert(x.begin(), x.end());
 			return (*this);
 		}
@@ -74,7 +72,6 @@ namespace ft
 		// Iterators
 		iterator begin()
 		{
-			// std::cout<< "In begin: " << static_cast<node*>(_chief.left)->element.first;
 			return iterator(_chief.left);
 		}
 
@@ -85,20 +82,11 @@ namespace ft
 
 		iterator end()
 		{
-			// std::cout << &_sentinel << std::endl;
-			// return iterator(&_sentinel);
-			// if (_size == 0)
-			// 	return iterator(_chief.left);
-			// return iterator(_chief.p->p);
 			return iterator(sentinel());
 		}
 
 		const_iterator end() const
 		{
-			// return const_iterator(&_sentinel);
-			// if (_size == 0)
-			// 	return const_iterator(_chief.left);
-			// return const_iterator(_chief.p->p);
 			return const_iterator(sentinel());
 		}
 
@@ -143,12 +131,8 @@ namespace ft
 		pair<iterator, bool>
 		insert(const value_type &val)
 		{
-			// print_tree_set();
-
 			rb_base_node *y = &_sentinel;
 			rb_base_node *x = root();
-
-			// std::cout << "Inserting: " << val << "\n";
 			if (_size == 0)
 			{
 				rb_node<T> *z = create_node(val);
@@ -161,22 +145,13 @@ namespace ft
 				z->color = BLACK;
 				z->p = &_sentinel;
 				_size++;
-				// std::cout << "Here\n";
-				// std::cout << _sentinel.left << std::endl;
-				// print_tree_set();
 				return ft::make_pair(iterator(z), true);
 			}
 			while (is_internal(x))
 			{
-				// std::cout << "\033[1;32mHERE\033[0m\n";
-				// std::cout << "internal root\n";
-				// std::cout << "\n\nx: " << (static_cast<const rb_node<T>*>(x))->element.first << std::endl;
 				y = x;
 				if (_comp(keyof(val), keyof(x)))
-				{
-					// std::cout << "Here\n";
 					x = x->left;
-				}
 				else if (_comp(keyof(x), keyof(val)))
 					x = x->right;
 				else
@@ -184,17 +159,10 @@ namespace ft
 			}
 			if (is_internal(y))
 			{
-				// std::cout << "\033[1;33mHERE\033[0m\n";
 				if (!_comp(keyof(y), keyof(val)) && !_comp(keyof(val), keyof(y)))
-				{
-					// print_tree_set();
 					return (ft::make_pair(iterator(y), false));
-				}
 				if (is_internal(y->p) && !_comp(keyof(y->p), keyof(val)) && !_comp(keyof(val), keyof(y->p)))
-				{
-					// print_tree_set();
 					return (ft::make_pair(iterator(y->p), false));
-				}
 			}
 			rb_node<T> *z = create_node(val);
 			z->p = y;
@@ -208,34 +176,14 @@ namespace ft
 			z->right = &_sentinel;
 			z->color = RED;
 			_size++;
-			// std::cout << "\n\n\nChecking\n\n\n";
 			if (_comp(keyof(val), keyof(_chief.left)))
-			{
-				// std::cout << "\n\n\\updating minimum\n\n\n";
 				_chief.left = z;
-			}
 			else if (_comp(keyof(_chief.right), keyof(val)))
 			{
-				// std::cout << "\n\n\\updating maximum\n\n\n";
-				// std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
 				_chief.right = z;
 				_sentinel.p = z;
 			}
-			// std::cout << "Size: " << _size << std::endl;
-			// std::cout << "Min: " << keyof(min()) << std::endl;
-			// std::cout << "Max: " << keyof(max()) << std::endl;
-			// std::cout << "\n\ny: " << (static_cast<const rb_node<T>*>(y))->element.first << std::endl;
-			// std::cout << "\n\nz parent: " << (static_cast<const rb_node<T>*>(z->p))->element.first << std::endl;
-			// std::cout << "\n\nz: " << (static_cast<const rb_node<T>*>(z))->element.first << std::endl;
-
 			insert_fixup(z);
-			// std::cout << "\n\n\nAfter fixup\n\n\n";
-			// std::cout << (static_cast<node *>(_chief.left))->element.first << std::endl;
-			// std::cout << "The key of the smallest element: " << (*begin()).first << std::endl;
-			// std::cout << "The key of begin: " << begin()->first << std::endl;
-			// std::cout << "The key of newly inserted pair: " << z->element.first << std::endl;
-			// std::cout << "The end: " << (*end()).first << std::endl;
-			// print_tree_set();
 			return (ft::make_pair(iterator(z), true));
 		}
 
@@ -246,26 +194,15 @@ namespace ft
 
 		iterator insert(iterator, const value_type &val)
 		{
-			// iterator position
-			// for now I will disregard the hint
 			return insert(val).first;
 		}
-
-		// iterator insert (const_iterator, const value_type& val)
-		// {
-		// 	//iterator position
-		// 	//for now I will disregard the hint
-		// 	return insert(val).first;
-		// }
 
 		template <class InputIterator>
 		void insert(InputIterator first, InputIterator last)
 		{
 			while (first != last)
 			{
-				// std::cout<< "Araaa: " << (*first).first << std::endl;
 				insert(*first);
-				// std::cout << "After insertion, Size: " << _size << std::endl;
 				first++;
 			}
 		}
@@ -277,50 +214,25 @@ namespace ft
 
 		void erase(iterator position)
 		{
-			// std::cout << "Again here?\n";
-			// print_tree();
-
 			rb_base_node *z = position._node;
 			rb_base_node *y = z;
 			node_color original_color_y = y->color;
 			rb_base_node *x;
-
-			// std::cout << "Cmooon\n";
 			if (position._node == _chief.left)
 			{
-				// std::cout << "\nSmallest\n";
 				_chief.left = (++position)._node;
 				position--;
-				// std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
-				// std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
 			}
 			if (position._node == _chief.right)
 			{
-				// std::cout << "\nGreatest\n";
 				_chief.right = (--position)._node;
 				_sentinel.p = _chief.right;
 				position++;
-				// std::cout << "Here? " << (static_cast<node *>(_chief.right))->element.first << std::endl;
 			}
 			if (is_external(z->left))
 			{
-				// std::cout << "OOOF\n";
-				// std::cout << "\n\nHere?\n\n";
-				// std::cout << "From here?\n";
-				
 				x = z->right;
-
 				rb_transplant(z, z->right);
-				// std::cout << "X value: " << static_cast<rb_node<T> *>(x)->element.first << std::endl;
-				// std::cout << "Is x root: " << is_root(x) << std::endl;
-				// std::cout << "Is x root 2: " << !is_internal(x->p) << std::endl;
-				// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
-				
-
-				// print_tree();
-				// std::cout << "Size: " << size() << std::endl;
-				// std::cout << "Smallest:    " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
-				// std::cout << "Parent of 1: " << (static_cast<rb_node<T> *>(_chief.left->p))->element.first << std::endl;
 			}
 			else if (is_external(z->right))
 			{
@@ -332,13 +244,11 @@ namespace ft
 				y = tree_min(z->right);
 				original_color_y = y->color;
 				x = y->right;
-				// std::cout << "X being internal: " << is_internal(x) << std::endl;
 				if (y->p == z && is_internal(x))
 					x->p = y;
 				else
 				{
 					rb_transplant(y, y->right);
-					// std::cout << "\033[1;31mEND: "<< (*(--end())).first << "\033[0m"<< std::endl;
 					y->right = z->right;
 					if (is_internal(y->right))
 						y->right->p = y;
@@ -348,46 +258,22 @@ namespace ft
 				y->left->p = y;
 				y->color = z->color;
 			}
-			// std::cout << "Size: " << _size << std::endl;
 			_size--;
-			// std::cout << "Internal x-p?: " << is_internal(x->p) << std::endl;
-			// std::cout << "is_root x?: " << is_root(x) << std::endl;
-
-			// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
-			// std::cout << "Size: " << _size << std::endl;
-
-
 			if (original_color_y == BLACK)
-			{
-
-				// std::cout << "here?\n";
 				delete_fixup(x);
-				// std::cout << "X parent value: " << static_cast<rb_node<T> *>(x->p)->element.first << std::endl;
-			}
-
-			// if (is_internal(z))
-			// {
-				allocator_type	alloc(this->_alloc);
-				alloc.destroy(&static_cast<node *>(z)->element);
-				_alloc.deallocate(static_cast<node *>(z), 1);
-			// }
-			
-			// print_tree();
+			allocator_type	alloc(this->_alloc);
+			alloc.destroy(&static_cast<node *>(z)->element);
+			_alloc.deallocate(static_cast<node *>(z), 1);
 		}
 
-		size_type erase(const key_type &k) // I was too lazy to think about this easy one
+		size_type erase(const key_type &k)
 		{
-			// std::cout << "Wait: Here?\n";
-			// print_tree_set();
 			iterator low = lower_bound(k);
 			iterator high = upper_bound(k);
 			size_type deletions = 0;
-			// std::cout << "Lower bound: " << (*low) << std::endl;
-			// std::cout << "Upper bound: " << (*high) << std::endl;
 
 			while (low != high)
 			{
-				// std::cout << "Low: " << *low << std::endl;
 				erase(low++);
 				deletions++;
 			}
@@ -401,27 +287,13 @@ namespace ft
 
 		void erase(iterator first, iterator last)
 		{
-			// std::cout << "Here?\n";
-			// std::cout << "First: "<< (*first).first << std::endl;
-			// std::cout << "Last: "<< (*last).first << std::endl;
-			// size_t distance = ft::distance(first, last);
 			iterator next = first;
 
 			while (next != last)
 			{
-				// std::cout << "Distance: " << distance << "\nDidn't reach here?\n";
 				next++;
-				// std::cout << "Before before\n";
-				// std::cout << "\033[1;31mFirst: "<< (*first).first << "\033[0m"<<  std::endl;
-				// std::cout << "\033[1;31mNext: "<< (*next).first << "\033[0m" << std::endl;
-
 				erase(first);
-				// std::cout << "Before\n";
 				first = next;
-				// std::cout << "After\n";
-
-				// distance--;
-				// print_tree(root());
 			}
 		}
 
@@ -431,13 +303,8 @@ namespace ft
 			while (is_internal(x) && !is_root(x) && x->color == BLACK)
 			{
 				rb_base_node *w;
-				// std::cout << "x: " << (static_cast<rb_node<T> *>(x))->element.first << std::endl;
-				// std::cout << "x->p: " << (static_cast<rb_node<T> *>(x->p))->element.first << std::endl;
-				// std::cout << "X->p->left" << static_cast<rb_node<T> *>(x->p->left)->element.first << std::endl;
-
 				if (x == x->p->left)
 				{
-					// std::cout << "here?\n";
 					w = x->p->right;
 					if (w->color == RED)
 					{
@@ -510,18 +377,11 @@ namespace ft
 		}
 
 	public:
-		// size_type erase (const key_type& k)
-		// {
-
-		// }
 		void swap(rb_tree &x)
 		{
-			// ft::sswap(_sentinel, x._sentinel);
 			ft::sswap(_chief, x._chief);
 			ft::sswap(_sentinel, x._sentinel);
 			ft::sswap(_size, x._size);
-			// ft::sswap(_alloc, x._alloc);
-			// ft::sswap(_comp, x._comp);
 		}
 
 		void clear()
@@ -542,7 +402,6 @@ namespace ft
 		// Operations
 		const_iterator find(const key_type &k) const
 		{
-			// print_tree_set();
 			if (empty())
 				return (const_iterator(&_sentinel));
 			rb_base_node *temp(root());
@@ -553,11 +412,8 @@ namespace ft
 				else
 					temp = temp->right;
 			}
-			//std::cout << "Temp: " << static_cast<node *>(temp)->element << std::endl;
-			// std::cout << "Is external temp: " << is_external(temp) << std::endl;
 			if (is_internal(temp) && !_comp(keyof(temp), k) && !_comp(k, keyof(temp)))
 				return (const_iterator(temp));
-			// std::cout << "Hello\n";
 			return (end());
 		}
 
@@ -602,7 +458,6 @@ namespace ft
 
 		iterator lower_bound(const key_type &k)
 		{
-			// return const_iterator(lower_bound(k));				//idkkkk how does this work(
 			const_iterator it = static_cast<const rb_tree &>(*this).lower_bound(k);
 			return (iterator(const_cast<rb_base_node *>(it._node)));
 		}
@@ -630,13 +485,11 @@ namespace ft
 			}
 			if (_comp(k, keyof(temp)))
 				return const_iterator(temp);
-			// std::cout << "Temp: " << static_cast<node *>(temp)->element << std::endl;
 			return ++const_iterator(temp);
 		}
 
 		iterator upper_bound(const key_type &k)
 		{
-			// return const_iterator(upper_bound(k));
 			const_iterator it = static_cast<const rb_tree &>(*this).upper_bound(k);
 			return (iterator(const_cast<rb_base_node *>(it._node)));
 		}
@@ -699,10 +552,6 @@ namespace ft
 
 		bool is_external(const rb_base_node *n) const
 		{
-			// return (!n || n == &_sentinel);
-			// if (!n->right)
-			// 	std::cout << "Internal?\n";
-
 			return (!n || (n && !n->left && !n->right));
 		}
 
@@ -765,14 +614,8 @@ namespace ft
 
 		void insert_fixup(rb_base_node *z)
 		{
-			// std::cout << "\nInsert fixup: " << keyof(z) << std::endl;
-			// std::cout << "\nInsert fixup, key of parent: " << keyof(z->p) << std::endl;
-			// std::cout << "\nInsert fixup, key of parent's parent: " << keyof(z->p->p) << std::endl;
-			// std::cout << "\nInsert fixup, key of parent's parent's left: " << keyof(z->p->p->left) << std::endl;
-
 			while (z->p->color == RED)
 			{
-				// std::cout << "Maybe here?\n";
 				if (z->p == z->p->p->left)
 				{
 					rb_base_node *y = z->p->p->right;
@@ -797,7 +640,6 @@ namespace ft
 				}
 				else
 				{
-					// std::cout << "Inside second if\n";
 					rb_base_node *y = z->p->p->left;
 					if (y->color == RED)
 					{
@@ -846,11 +688,6 @@ namespace ft
 			_chief.right = &_sentinel;
 			_chief.left = &_sentinel;
 			_chief.color = BLACK;
-
-			// std::cout << "Sentinel: " << &_sentinel << std::endl;
-			// std::cout << "Sentinel left: " << _sentinel.left << std::endl;
-			// if (_sentinel.left)
-			// 	std::cout << "oof\n";
 		}
 
 		void rb_transplant(rb_base_node *u, rb_base_node *v)
@@ -874,76 +711,6 @@ namespace ft
 			allocator_type alloc(this->_alloc);
 			alloc.destroy(&static_cast<node *>(x)->element);
 			this->_alloc.deallocate(static_cast<node *>(x), 1);
-		}
-
-		//INORDER -T REE -W ALK .x/
-		void print_tree() const
-		{
-			print_tree(root());
-			std::cout << "Smallest: " << (static_cast<rb_node<T> *>(_chief.left))->element.first << std::endl;
-			std::cout << "Largest: " << (static_cast<rb_node<T> *>(_chief.right))->element.first << std::endl;
-			std::cout << "Sentinel's parent: " << (static_cast<rb_node<T> *>(_sentinel.p))->element.first << std::endl;
-			std::cout << std::endl;
-		}
-		void print_tree(rb_base_node *x) const
-		{
-			if (is_internal(x))
-			{
-				print_tree(x->left);
-				std::cout << "Key: " << (static_cast<rb_node<T> *>(x))->element.first << ", Left: ";
-				if (is_internal(x->left))
-					std::cout << (static_cast<rb_node<T> *>(x->left))->element.first;
-				else
-					std::cout << "none";
-				if (is_internal(x->right))
-					std::cout << ", Right: " << (static_cast<rb_node<T> *>(x->right))->element.first;
-				else
-					std::cout << ", Right: none";
-				if (is_internal(x->p))
-					std::cout << ", Parent: " << (static_cast<rb_node<T> *>(x->p))->element.first;
-				else
-					std::cout << ",\033[1;31m ROOT\033[0m";
-				std::cout << std::endl;
-				print_tree(x->right);
-			}
-		}
-
-		void print_tree_set() const
-		{
-			// std::cout << "What's going on?\n";
-			if (size() > 0)
-			{
-				print_tree_set(root());
-				std::cout << "Smallest: " << (static_cast<rb_node<T> *>(_chief.left))->element << std::endl;
-				std::cout << "Largest: " << (static_cast<rb_node<T> *>(_chief.right))->element << std::endl;
-				std::cout << "Sentinel's parent: " << (static_cast<rb_node<T> *>(_sentinel.p))->element << std::endl;
-				std::cout << "Size: " << size() << std::endl;
-				std::cout << std::endl;
-			}
-		}
-		void print_tree_set(rb_base_node *x) const
-		{
-			// std::cout << "Is internal x? " << is_internal(x) << std::endl;
-			if (is_internal(x))
-			{
-				// std::cout << "Here?\n";
-				print_tree_set(x->left);
-				std::cout << "Key: " << (static_cast<rb_node<T> *>(x))->element << ", Left: ";
-				if (is_internal(x->left))
-					std::cout << (static_cast<rb_node<T> *>(x->left))->element;
-				else
-					std::cout << "none";
-				if (is_internal(x->right))
-					std::cout << ", Right: " << (static_cast<rb_node<T> *>(x->right))->element;
-				else
-					std::cout << ", Right: none";
-				if (is_internal(x->p))
-					std::cout << ", Parent: " << (static_cast<rb_node<T> *>(x->p))->element;
-				else
-					std::cout << ",\033[1;31m ROOT\033[0m";
-				std::cout << std::endl;
-				print_tree_set(x->right);
-			}
 		}
 	};
 

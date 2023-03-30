@@ -18,7 +18,7 @@ namespace ft
 
 			random_access_iterator(): ptr() {}
 			random_access_iterator(const random_access_iterator &other): ptr(other.ptr) {}
-			random_access_iterator(pointer p): ptr(p) {}							//Do I need this? If not what is the point of rai?
+			random_access_iterator(pointer p): ptr(p) {}							
 			virtual ~random_access_iterator() {}
 
 			random_access_iterator &operator=(const random_access_iterator &other)
@@ -113,9 +113,6 @@ namespace ft
 	template <typename T, typename U>  
 	bool operator==(const ft::random_access_iterator<T>& lhs,const ft::random_access_iterator<U>& rhs)
 	{
-		// std::cout << "lhs base: " << *lhs.base() << std::endl;
-		// std::cout << "rhs base: " << *rhs.base() << std::endl;
-
 		return (lhs.base() == rhs.base());
 	}
 

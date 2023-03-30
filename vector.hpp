@@ -9,6 +9,7 @@
 #include "type_traits.hpp"
 #include "helper.hpp"
 #include "algorithm.hpp"
+#include <limits>
 
 namespace ft 
 {
@@ -30,11 +31,8 @@ namespace ft
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 			typedef size_t size_type;
 
-			explicit vector (const allocator_type& alloc = allocator_type()): _arr(), _size(0), _capacity(0), _alloc(alloc){
-				// std::cout << "In constructor: " << _arr << std::endl;
-			}
+			explicit vector (const allocator_type& alloc = allocator_type()): _arr(), _size(0), _capacity(0), _alloc(alloc){}
 
-			
 			explicit vector (size_type n, const value_type& val = value_type(),const allocator_type& alloc = allocator_type()): _size(0), _capacity(0), _alloc(alloc)
 			{
 				size_type i = 0;
@@ -43,18 +41,19 @@ namespace ft
 				{
 					if (n > max_size())
 						throw std::length_error("Exceeds max size.");
-					// _arr = _alloc.allocate(n);
+					if (n > 0)
+					{
+						_arr = _alloc.allocate(n);
+						_capacity = n;
+					}
 					for (; i < n; i++)
 						push_back(val);
 				}
 				catch(...)
-				{	
-					// std::cout << "Reached here\n";
+				{
 					this->clear();
-					// if (n <= max_size())
 					if (_capacity > 0)
 						this->_alloc.deallocate(this->_arr, i);
-					// std::cout << "Here?\n";
 					throw ;
 				}
 			}
@@ -63,13 +62,8 @@ namespace ft
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 					typename enable_if<!is_integral<InputIterator>::value, bool>::type = true): _size(0), _capacity(0), _alloc(alloc)
 			{
-				//_capacity(ft::distance(first, last))
-				// std::cout << "Here?\n";
 				try 
 				{
-					// if (capacity() > max_size())
-					// 	throw std::length_error("Exceeds max size.");
-					// _arr = _alloc.allocate(_capacity);
 					for (; first != last; ++first)
 					{
 						push_back(*first);
@@ -77,23 +71,15 @@ namespace ft
 				} 
 				catch (std::exception &e) 
 				{
-
-					// std::cout << "?\n";
-					// if (_capacity > 0)
-					// {
 						this->clear();
 					if (_capacity > 0)
 						this->_alloc.deallocate(this->_arr, _capacity);
-					// }
 					throw e;
 				}
-				// std::cout << "Not throwing exception\n";
 			}
 
 			vector(const vector &other): _size(0),  _capacity(0), _alloc(other._alloc)
 			{
-				// this->_arr = this->_alloc.allocate(_capacity);
-				// std::cout << "Copy constructor: " << _arr << std::endl;
 				while (this->_size != other._size)
 					push_back(other[this->_size]);
 			}
@@ -162,14 +148,7 @@ namespace ft
 					for (size_type i = n; i < tmp; i++)
 						pop_back();
 				if (n > _size)
-				{
-					// while (n > _capacity)
-					// 	if (_capacity == 0)
-					// 		reserve(18);
-					// 	else
-					// 		reserve(2 * _capacity);
 					insert(iterator(end()), n - _size, val);
-				}
 			}
 
 			size_type capacity() const
@@ -180,15 +159,6 @@ namespace ft
 			{
 				return (_size == 0);
 			}
-
-			// void reserve(size_type n) 
-			// {
-			// 	if (n > this->capacity()) {
-			// 		size_type curr_size = this->size();
-			// 		this->resize(n);
-			// 		this->resize(curr_size);
-			// 	}
-			// }
 
 			void reserve (size_type n)
 			{
@@ -204,7 +174,7 @@ namespace ft
 						temp = _alloc.allocate(n);
 						for (i = 0; i < _size; i++)
 						{	_alloc.construct(temp + i, _arr[i]);
-							_alloc.destroy(_arr + i);		//if try catch needed move to the bottom
+							_alloc.destroy(_arr + i);
 						}
 						if (_capacity > 0)
 							_alloc.deallocate(_arr, _capacity);
@@ -218,7 +188,6 @@ namespace ft
 						_alloc.deallocate(temp, n);
 						throw ;
 					}
-					// for (i = 0; i < _size; i++)
 				}
 			}
 
@@ -280,18 +249,49 @@ namespace ft
 			template <class InputIterator>  
 			void assign (InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)		//probably enable if the iterator is input iterator
 			{
-				clear();
+				assign_dispatch(first, last, typename ft::iterator_traits<InputIterator>::iterator_category());
+			}
 
-				// std::cout << "\n\nPRINTING IN ASSIGN\n\n";
-				// for (iterator it = begin(); it != end(); it++)
-				// 	std::cout << *it << std::endl;
+		private:
+			template <class InputIterator>  
+			void assign_dispatch (InputIterator first, InputIterator last, std::input_iterator_tag)
+			{
+				clear();
 				while (first != last)
 					push_back(*(first++));
 			}
 
+			template <class InputIterator>  
+			void assign_dispatch (InputIterator first, InputIterator last, std::forward_iterator_tag)
+			{
+				clear();
+
+				size_type n = ft::distance(first, last);
+				if (n > _capacity)
+				{
+					if (_capacity > 0)
+						_alloc.deallocate(_arr, n);
+					_capacity = n;
+					_arr = _alloc.allocate(n);
+				}
+				while (first != last)
+				{
+					push_back(*first);
+					first++;
+				}
+			}
+
+		public:
 			void assign (size_type n, const value_type& val)
 			{
 				clear();
+				// if (n > _capacity)
+				// {
+				// 	if (_capacity > 0)
+				// 		_alloc.deallocate(_arr, n);
+				// 	_capacity = n;
+				// 	_arr = _alloc.allocate(n);
+				// }
 				for (size_type i = 0; i < n; i++)
 					push_back(val);
 			}
@@ -300,7 +300,7 @@ namespace ft
 			{
 				if (_capacity == 0)
 				{
-					_capacity = 18;
+					_capacity = 1;
 					_arr = _alloc.allocate(_capacity);
 				}
 				else if (_size == _capacity)
@@ -316,48 +316,21 @@ namespace ft
 
 			iterator insert(iterator position, const T& val) 
 			{
-				// bool esim = position == end();
-				// std::cout << "Position is end: " << esim << std::endl;
 				size_t offset = position - begin();
-				value_type copy = val;	
+				value_type copy = val;
 				push_back(copy);
 				position = begin() + offset;
-				// if (size() == 19)
-				// {
-				// 	std::cout << "After pushing\n";
-				// 	for (iterator it = begin(); it != position; it++)
-				// 		std::cout << *it << " ";
-				// 	std::cout << std::endl;
-				// }
-				// if (size() == 19)
-				// {
-
-				// }
 				if (this->size() == 1)
 					return this->begin();
 				if (offset == _size - 1)
 					return begin() + offset;
-				// if (size() == 19)
-				// 	std::cout << "Begin: " << *begin() << std::endl;
-				// if (size() == 19)
-				// {
-				// 	std::cout << "THE CONTENT\n";
-				// 	for (iterator it = begin(); it != end(); it++)
-				// 		std::cout << *it << std::endl;
-				// 	std::cout << "THE END\n";
-				// }
+				// std::cout << "Position: " << position.base() << std::endl;
 				for (iterator it = end() - 1; it != position; it--)
 				{
-					// if (size() == 19)
-					// {
-					// 	std::cout << "Old it: " << *it << ",  ";
-					// }
+					// std::cout << it.base() << std::endl;
 					*it = *(it - 1);
-					// if (size() == 19)
-					// {
-					// 	std::cout << "New it: " << *it << "\n";
-					// }
 				}
+				// std::cout << "HEREEEE\n";
 				*position = copy;
 				return begin() + offset;
     		}
@@ -367,40 +340,24 @@ namespace ft
 				if (n + size() > max_size())
 					throw std::length_error("More than the max size.");
 				value_type copy = val;
-				// if (position == end() && size() == 0)
-				// {
-				// 	std::cout << "OFFSET: \n";
-				// 	position = begin();
-
-				// }
+				if (size() + n > _capacity)
+					reserve(size() + n);
 				while (n-- > 0)
 				{
-					// std::cout << "Stuck here\n";
 					position = insert(position, copy);
-					// if (size() == 18)
-					// {
-					// 	std::cout << "before incrementing\n";
-					// 	for (iterator it = begin(); it != position; it++)
-					// 		std::cout << *it << " ";
-					// 	std::cout << std::endl;
-					// }
-					// std::cout << "Just inserted: " << *position << std::endl;
-					// std::cout << "Begin: " << *begin() << std::endl;
-					// std::cout << "Size: " << size() << std::endl;
-					// std::cout << std::endl;
 					position++;
-					// if (size() == 18)
-					// {
-					// 	std::cout << "After incrementing\n";
-					// 	for (iterator it = begin(); it != position; it++)
-					// 		std::cout << *it << " ";
-					// 	std::cout << std::endl;
-					// }
 				}	
    			}
 
 			template <class InputIterator>
 			void insert(iterator position, InputIterator first, InputIterator last, typename enable_if<!is_integral<InputIterator>::value, bool>::type = true)
+			{
+				//
+				insert_dispatch(position, first, last, typename ft::iterator_traits<InputIterator>::iterator_category());
+			}
+		private:
+			template <class InputIterator>
+			void insert_dispatch(iterator position, InputIterator first, InputIterator last, std::input_iterator_tag)
 			{
 				for (; first != last; first++)
 				{	
@@ -409,6 +366,31 @@ namespace ft
 				}
 			}
 
+			template <class InputIterator>
+			void insert_dispatch(iterator position, InputIterator first, InputIterator last, std::forward_iterator_tag)
+			{
+				// std::cout << "Before reserve: " << *first << std::endl;
+				size_t offset = position - begin();
+				size_type n = ft::distance(first, last);
+				if (n + size() > _capacity)
+					reserve(n + size());
+				position = begin() + offset;
+				// std::cout << "After reserve: " << *first << std::endl;
+				iterator it = end() - 1;
+				while (n > 0)
+				{
+					*(it--) = *(position + n);
+					n--;
+				}
+				for (; first != last; first++)
+				{	
+					value_type copy = *first;
+					*(begin() + offset) = copy;
+					offset++;
+				}
+			}
+	
+		public:
 			void swap (vector& x)
 			{
 
@@ -447,12 +429,7 @@ namespace ft
 		private:
 			void clear_deallocate()
 			{
-				// if (capacity() > 0)
-				// {
-					// std::cout << "Enters here?\n";
-					clear();
-				// }
-				// std::cout << _arr << std::endl;
+				clear();
 				if (_capacity > 0)
 				{
 					// std::cout << "Here\n";

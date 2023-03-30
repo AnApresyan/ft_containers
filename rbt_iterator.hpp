@@ -8,7 +8,6 @@
 
 namespace ft
 {
-
 	template<typename T>
 	class const_rbt_iterator;
 
@@ -58,25 +57,19 @@ namespace ft
 
 			reference operator*() const
 			{
-				// return _node->element;
 				return ((static_cast<rb_node<T>*>(_node))->element);
 			}
 
 			rbt_iterator& operator++()
 			{
-				// std::cout << "\nIncrementing started\n";
-				// std::cout << _node->right->element.first << std::endl;
-				// std::cout << "\n\n\nBefore\n";
 				if (is_internal(_node->right))
 				{
-					// std::cout << "\nFirst if\n" << std::endl;
 					_node = _node->right;
 					while (is_internal(_node->left))
 						_node = _node->left;
 				}
 				else if (is_internal(_node->p))
 				{
-					// std::cout << "\nSecond if\n" << std::endl;
 					if (_node == _node->p->left)
 						_node = _node->p;
 					else
@@ -102,7 +95,6 @@ namespace ft
 			{
 				if (!is_internal(_node))
 				{
-					// std::cout << "of esim e\n";
 					_node = _node->p;
 					return (*this);
 				}	
@@ -123,8 +115,6 @@ namespace ft
 						_node = _node->p;	
 					}
 				}
-				// else
-				// 	_node = _node->right;
 				return (*this);
 			}
 
@@ -134,28 +124,15 @@ namespace ft
   				--(*this);
   				return temp;
 			}
-			
-			// operator rbt_iterator<T> ()
-			// {
-			// 	return (const_rbt_iterator<const T>(_node));
-			// }
 
 			private:
 				bool is_internal(const rb_base_node *n)
 				{
-					// std::cout << "Is internal: " << n << std::endl; 
-					// // if (n)
-					// // 	std::cout << "First condition holds\n";
-					// // if (n->left)
-					// // 	std::cout << "Second condition holds\n";
-					// // std::cout << (static_cast<const rb_node<T>*>(n)->left)->element.first;
-					// return (n && n->left && n->right);
 					return (!is_external(n));
 				}
 
 				bool is_external(const rb_base_node *n)
 				{
-					// std::cout << n->left << std::endl;
 					return (n && !n->left);
 				}
 	};
@@ -217,46 +194,30 @@ namespace ft
 
 			reference operator*() const
 			{
-				// return _node->element;
-				// std::cout << "\n\nOf aman esim e 2.1\n\n";
 				return (static_cast<const rb_node<T>*>(this->_node))->element;
-
 			}
 
 			const_rbt_iterator& operator++()
 			{
-				// std::cout << (static_cast<const rb_node<T>*>(_node->p))->element.first;
 				if (is_internal(_node->right))
 				{
-					// std::cout << "?\n"; 
 					_node = _node->right;
 					while (is_internal(_node->left))
 						_node = _node->left;
 				}
 				else if (is_internal(_node->p))
 				{
-					// std::cout << "WTFFF\n";
 					if (_node == _node->p->left)
-					{
-						// std::cout 
-						_node = _node->p;
-					}             
+						_node = _node->p;           
 					else
 					{
 						while (is_internal(_node->p) && _node == _node->p->right)
 							_node = _node->p;
 						_node = _node->p;
-						// std::cout << "Of de aman esim e\n";
-						// std::cout << (static_cast<const rb_node<T>*>(_node))->element.first;
-
 					}
 				}
 				else
-				{
-					// std::cout << "of de aman esim e 2.0\n";
 					_node = _node->right;
-					// std::cout << "Is internal? " << is_internal(_node) << std::endl;
-				}
 				return (*this);
 			}
 
@@ -269,12 +230,9 @@ namespace ft
 
 			const_rbt_iterator& operator--()
 			{
-				// std::cout << "\nof aman esim e\n";
 				if (!is_internal(_node))
 				{
-					// std::cout << "\nMtaaaavvv\n";
 					_node = _node->p;
-				// std::cout << "Paaaaarent: " <<(static_cast<const rb_node<T>*>(_node))->element.first << std::endl;
 					return (*this);
 				}
 				if (is_internal(_node->left))
@@ -294,8 +252,6 @@ namespace ft
 						_node = _node->p;	
 					}
 				}
-				// else
-				// 	_node = _node->left;
 				return (*this);
 			}
 
@@ -309,19 +265,11 @@ namespace ft
 			private:
 				bool is_internal(const rb_base_node *n)
 				{
-					// std::cout << "Is internal: " << n << std::endl; 
-					// // if (n)
-					// // 	std::cout << "First condition holds\n";
-					// // if (n->left)
-					// // 	std::cout << "Second condition holds\n";
-					// // std::cout << (static_cast<const rb_node<T>*>(n)->left)->element.first;
-					// return (n && n->left && n->right);
 					return (!is_external(n));
 				}
 
 				bool is_external(const rb_base_node *n)
 				{
-					// std::cout << n->left << std::endl;
 					return (n && !n->left);
 				}
 	};

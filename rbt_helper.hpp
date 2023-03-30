@@ -17,10 +17,6 @@ namespace ft
 	bool operator() (const T& x, const T& y) const {return x<y;}
 	};
 
-	// template <class T> struct equal : binary_function <T,T,bool> {
-	// bool operator() (const T& x, const T& y) const {return x==y;}
-	// };
-
 	template <class Arg, class Result>
 	struct	unary_function
 	{
@@ -56,7 +52,7 @@ namespace ft
 		}
 	};
 
-	template <class T>		//again ALex
+	template <class T>
 	T	*addressof(T &ref)
 	{
 		return (reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(ref))));
