@@ -174,6 +174,7 @@ namespace ft
 						temp = _alloc.allocate(n);
 						for (i = 0; i < _size; i++)
 						{	_alloc.construct(temp + i, _arr[i]);
+							// std::cout << "Enters?\n";
 							_alloc.destroy(_arr + i);
 						}
 						if (_capacity > 0)
@@ -337,11 +338,17 @@ namespace ft
 
 			void insert(iterator position, size_type n, const T& val)
 			{
+				// std::cout << "Should be here\n";
 				if (n + size() > max_size())
 					throw std::length_error("More than the max size.");
 				value_type copy = val;
+				size_t offset = position - begin();
 				if (size() + n > _capacity)
+				{
+					// std::cout << "Here\n";
 					reserve(size() + n);
+					position = begin() + offset;
+				}
 				while (n-- > 0)
 				{
 					position = insert(position, copy);
@@ -370,24 +377,67 @@ namespace ft
 			void insert_dispatch(iterator position, InputIterator first, InputIterator last, std::forward_iterator_tag)
 			{
 				// std::cout << "Before reserve: " << *first << std::endl;
+				// std::cout << "Should be here\n";
+				// std::cout << "Size" << size() << '\n';
+
 				size_t offset = position - begin();
-				size_type n = ft::distance(first, last);
+				// std::cout << "Offset: " << offset << std::endl;
+				size_t n = ft::distance(first, last);
+				// std::cout << "Distance: " << n << std::endl;
 				if (n + size() > _capacity)
 					reserve(n + size());
 				position = begin() + offset;
+				// std::cout << "Begin: " << *(begin() + 3) << std::endl;
+				// std::cout << "Should work: " << *(position - 1) << std::endl;
 				// std::cout << "After reserve: " << *first << std::endl;
-				iterator it = end() - 1;
-				while (n > 0)
+				// for (iterator it = begin(); it != end(); it++)
+				// 	std::cout << *it << std::endl;
+
+				// for (iterator it = position; it != end(); it++)
+				// 	std::cout << *it << std::endl;
+
+				// for (size_t i = 0; position + i != end(); i++)
+				// 	std::cout << *(position + i) << std::endl;
+				// std::cout << "It: " << *it << std::endl;
+				// if(position != end())
+				// {
+					// std::cout << "Enters here\n";
+				size_t shifted = end() - position - 1;
+				// iterator it = position + shifted + n;
+				// std::cout << "Shifted: " << shifted << '\n';
+				if (position != end())
 				{
-					*(it--) = *(position + n);
-					n--;
+					while (shifted >= 0)
+					{
+						// std::cout << "Position: " << *(position + shifted) << '\n';
+						// if (position + i = end())
+						// 	break;
+						// std::cout << "Here: " << i << "\n";
+						// std::cout << "Position + i: " << *(position + i) << '\n';
+						*(position + shifted + n) = *(position + shifted);
+						if (shifted == 0)
+							break;
+						shifted--;
+						// break;
+						// std::cout << "Inside loop: " << i << '\n';
+					}	
 				}
+				// }
+				// std::cout << "Here??????\n";
+				// while (n-- > 0)
+				// {
+				// 	*(it--) = *(position + n);
+				// }
 				for (; first != last; first++)
 				{	
 					value_type copy = *first;
-					*(begin() + offset) = copy;
+					_alloc.construct(_arr + offset, copy);
+					*position = copy;
 					offset++;
+					position++;
+					_size++;
 				}
+				// std::cout << \n";
 			}
 	
 		public:
