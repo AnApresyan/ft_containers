@@ -402,25 +402,40 @@ namespace ft
 				// if(position != end())
 				// {
 					// std::cout << "Enters here\n";
-				size_t shifted = end() - position - 1;
+				size_t shifted = end() - position;
 				// iterator it = position + shifted + n;
 				// std::cout << "Shifted: " << shifted << '\n';
-				if (position != end())
-				{
-					while (shifted >= 0)
+
+					// size_t add = size() + n;
+					for(; last != first; last--)
 					{
 						// std::cout << "Position: " << *(position + shifted) << '\n';
 						// if (position + i = end())
 						// 	break;
 						// std::cout << "Here: " << i << "\n";
 						// std::cout << "Position + i: " << *(position + i) << '\n';
-						*(position + shifted + n) = *(position + shifted);
-						if (shifted == 0)
-							break;
+						// _alloc.construct(_arr + add, *(position + shifted));
+						// add--;
+						if (position != end())
+						{
+							*(position + shifted + n) = *(position + shifted);
+							_alloc.destroy(_arr + offset + shifted);
+							// if (shifted == 0)
+							// 	break;
+						}
 						shifted--;
+						// _size++;
+						value_type copy = *last;
+						// if (position != end())
+						// 	_alloc.destroy(_arr + offset);
+						//_alloc.destroy(_alloc.address(*(first++)));
+						_alloc.construct(_arr + offset + shifted, copy);
+						// *position = copy;
+						// offset++;
+						// position++;
+						_size++;
 						// break;
 						// std::cout << "Inside loop: " << i << '\n';
-					}	
 				}
 				// }
 				// std::cout << "Here??????\n";
@@ -428,15 +443,18 @@ namespace ft
 				// {
 				// 	*(it--) = *(position + n);
 				// }
-				for (; first != last; first++)
-				{	
-					value_type copy = *first;
-					_alloc.construct(_arr + offset, copy);
-					*position = copy;
-					offset++;
-					position++;
-					_size++;
-				}
+				// for (; first != last; first++)
+				// {	
+				// 	value_type copy = *first;
+				// 	// if (position != end())
+				// 	// 	_alloc.destroy(_arr + offset);
+				// 	//_alloc.destroy(_alloc.address(*(first++)));
+				// 	_alloc.construct(_arr + offset, copy);
+				// 	*position = copy;
+				// 	// offset++;
+				// 	position++;
+				// 	// _size++;
+				// }
 				// std::cout << \n";
 			}
 	
