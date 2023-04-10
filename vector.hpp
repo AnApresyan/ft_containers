@@ -179,6 +179,7 @@ namespace ft
 						}
 						if (_capacity > 0)
 							_alloc.deallocate(_arr, _capacity);
+						// std::cout << "reached here\n\n\n\n";
 						_capacity = n;
 						_arr = temp;
 					}
@@ -293,6 +294,8 @@ namespace ft
 				// 	_capacity = n;
 				// 	_arr = _alloc.allocate(n);
 				// }
+				if (n > _capacity)
+					reserve(n);
 				for (size_type i = 0; i < n; i++)
 					push_back(val);
 			}
@@ -306,6 +309,7 @@ namespace ft
 				}
 				else if (_size == _capacity)
 					reserve(_capacity * 2);
+				// std::cout << "Also here\n";
 				_alloc.construct(_arr + _size, val);
 				_size++;
 			}
@@ -346,14 +350,65 @@ namespace ft
 				if (size() + n > _capacity)
 				{
 					// std::cout << "Here\n";
-					reserve(size() + n);
+					// reserve(size() + n);
+					if (size() + n > 2*size())
+						reserve(size() + n);
+					else
+						reserve(size()*2);
 					position = begin() + offset;
 				}
-				while (n-- > 0)
+				if (position != end())
 				{
-					position = insert(position, copy);
-					position++;
-				}	
+					size_t initial_n = n;
+					size_t shifted = end() - position - 1;
+					while (offset + shifted + n >= size())
+					{
+						_alloc.construct(_arr + offset + shifted + n, *(position + shifted));
+						if (shifted == 0)
+							break;
+						shifted--;
+					}
+					if (shifted != 0 || (shifted == 0 && offset + shifted + n < size()))
+					{
+						while (shifted >= 0)
+						{
+							*(position + shifted + n) = *(position + shifted);
+							if (shifted == 0)
+								break;
+							shifted--;
+						}
+					}
+					while (offset < size() && n > 0)
+					{
+						*position = copy;
+						position++;
+						offset++;
+						n--;
+					}
+					while (n-- > 0)
+					{
+						_alloc.construct(_arr + offset, copy);
+						offset++;
+					}
+					_size += initial_n;
+				}
+				else
+				{
+					// std::cout << "Hopefully here\n";
+					// std::cout << "n: " << n << std::endl;
+					while (n-- > 0)
+					{
+						_alloc.construct(_arr + _size, copy);
+						_size++;
+					}
+					// _size += initial_n;
+						// push_back(copy);
+				}
+				// while (n-- > 0)
+				// {
+				// 	insert(position, copy);
+				// 	position++;
+				// }
    			}
 
 			template <class InputIterator>
@@ -376,86 +431,77 @@ namespace ft
 			template <class InputIterator>
 			void insert_dispatch(iterator position, InputIterator first, InputIterator last, std::forward_iterator_tag)
 			{
-				// std::cout << "Before reserve: " << *first << std::endl;
-				// std::cout << "Should be here\n";
-				// std::cout << "Size" << size() << '\n';
-
 				size_t offset = position - begin();
-				// std::cout << "Offset: " << offset << std::endl;
 				size_t n = ft::distance(first, last);
-				// std::cout << "Distance: " << n << std::endl;
 				if (n + size() > _capacity)
-					reserve(n + size());
+				{
+					if (n + size() > 2 * size())
+						reserve(n + size());
+					else
+						reserve(size() * 2);
+				}
+				// std::cout << "Capacity " << _capacity << std::endl;
 				position = begin() + offset;
-				// std::cout << "Begin: " << *(begin() + 3) << std::endl;
-				// std::cout << "Should work: " << *(position - 1) << std::endl;
-				// std::cout << "After reserve: " << *first << std::endl;
-				// for (iterator it = begin(); it != end(); it++)
-				// 	std::cout << *it << std::endl;
-
-				// for (iterator it = position; it != end(); it++)
-				// 	std::cout << *it << std::endl;
-
-				// for (size_t i = 0; position + i != end(); i++)
-				// 	std::cout << *(position + i) << std::endl;
-				// std::cout << "It: " << *it << std::endl;
-				// if(position != end())
-				// {
-					// std::cout << "Enters here\n";
-				size_t shifted = end() - position;
-				// iterator it = position + shifted + n;
-				// std::cout << "Shifted: " << shifted << '\n';
-
-					// size_t add = size() + n;
-					for(; last != first; last--)
+				size_t shifted = end() - position - 1;
+				if (position != end())
+				{
+				// std::cout << "Here\n";
+					while (offset + shifted + n >= size())
 					{
-						// std::cout << "Position: " << *(position + shifted) << '\n';
-						// if (position + i = end())
-						// 	break;
-						// std::cout << "Here: " << i << "\n";
-						// std::cout << "Position + i: " << *(position + i) << '\n';
-						// _alloc.construct(_arr + add, *(position + shifted));
-						// add--;
-						if (position != end())
+						_alloc.construct(_arr + offset + shifted + n, *(position + shifted));
+						if (shifted == 0)
+							break;
+						shifted--;
+					}
+					if (shifted != 0 || (shifted == 0 && offset + shifted + n < size()))
+					{
+						while (shifted >= 0)
 						{
 							*(position + shifted + n) = *(position + shifted);
-							_alloc.destroy(_arr + offset + shifted);
-							// if (shifted == 0)
-							// 	break;
+							if (shifted == 0)
+								break;
+							shifted--;
 						}
-						shifted--;
-						// _size++;
-						value_type copy = *last;
-						// if (position != end())
-						// 	_alloc.destroy(_arr + offset);
-						//_alloc.destroy(_alloc.address(*(first++)));
-						_alloc.construct(_arr + offset + shifted, copy);
-						// *position = copy;
-						// offset++;
-						// position++;
-						_size++;
-						// break;
-						// std::cout << "Inside loop: " << i << '\n';
+					}
+					while (offset < size() && first != last)
+					{
+						value_type copy = *(first++);
+						*position = copy;
+						position++;
+						offset++;
+					}
+					while (first != last)
+					{
+						value_type copy = *(first++);
+						_alloc.construct(_arr + offset, copy);
+						offset++;
+					}
+					_size += n;
+							
 				}
-				// }
-				// std::cout << "Here??????\n";
-				// while (n-- > 0)
-				// {
-				// 	*(it--) = *(position + n);
-				// }
-				// for (; first != last; first++)
-				// {	
-				// 	value_type copy = *first;
-				// 	// if (position != end())
-				// 	// 	_alloc.destroy(_arr + offset);
-				// 	//_alloc.destroy(_alloc.address(*(first++)));
-				// 	_alloc.construct(_arr + offset, copy);
-				// 	*position = copy;
-				// 	// offset++;
-				// 	position++;
-				// 	// _size++;
-				// }
-				// std::cout << \n";
+				else
+				{
+					// std::cout << "here?\n";
+					while (first != last)
+					{
+						// std::cout << ": " << std::endl;
+						// try
+						// {
+							value_type copy = *(first++);
+							// std::cout << "Hereeeeeee\n";
+							_alloc.construct(_arr + _size, copy);
+							_size++;
+						// }
+						// catch(...)
+						// {
+						// 	// clear();
+						// 	std::cout << "Capacity: " << capacity() << std::endl;
+						// 	throw ;
+						// }
+						
+					}
+						// push_back(*(first++));
+				}
 			}
 	
 		public:
@@ -498,10 +544,12 @@ namespace ft
 			void clear_deallocate()
 			{
 				clear();
+				// std::cout << "HMMMMM\n";
 				if (_capacity > 0)
 				{
 					// std::cout << "Here\n";
 					this->_alloc.deallocate(_arr, capacity());
+					// std::cout << "VVVVVV\n";
 				}
 			}
 

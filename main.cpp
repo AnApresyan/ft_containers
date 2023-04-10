@@ -134,33 +134,41 @@
 
 int main()
 {
+    for (int i = 0; i < 2; ++i) {
+        ft::vector<int> v;
+
+        for (std::size_t i = 0; i < 10000; ++i) {
+            std::cout << i << " ";
+            v.insert(v.end(), i, rand());
+        }
+    }
 	//Volodya's tester
 	// const std::string       vec_example17(double &_time)
 	// {
-		std::ostringstream      ss;
+		// std::ostringstream      ss;
 
-		ft::vector<int> vec(5, int(42));
-		ss << " " << vec.capacity();
-		ss << " " << vec.size();
-		for (size_t i = 0; i < vec.size(); ++i)
-				ss << ' ' << vec[i];
-		vec.assign(11, 48);
-		ss << " " << vec.capacity();
-		ss << " " << vec.size();
-		for (size_t i = 0; i < vec.size(); ++i)
-				ss << ' ' << vec[i];
-		vec.assign(3, 21);
-		ss << " " << vec.capacity();
-		ss << " " << vec.size();
-		for (size_t i = 0; i < vec.size(); ++i)
-				ss << ' ' << vec[i];
-		vec.assign(0, 2);
-		ss << " " << vec.capacity();
-		ss << " " << vec.size();
-		for (size_t i = 0; i < vec.size(); ++i)
-				ss << ' ' << vec[i];
-		// _time = 0;
-		std::cout << ss.str();
+		// ft::vector<int> vec(5, int(42));
+		// ss << " " << vec.capacity();
+		// ss << " " << vec.size();
+		// for (size_t i = 0; i < vec.size(); ++i)
+		// 		ss << ' ' << vec[i];
+		// vec.assign(11, 48);
+		// ss << " " << vec.capacity();
+		// ss << " " << vec.size();
+		// for (size_t i = 0; i < vec.size(); ++i)
+		// 		ss << ' ' << vec[i];
+		// vec.assign(3, 21);
+		// ss << " " << vec.capacity();
+		// ss << " " << vec.size();
+		// for (size_t i = 0; i < vec.size(); ++i)
+		// 		ss << ' ' << vec[i];
+		// vec.assign(0, 2);
+		// ss << " " << vec.capacity();
+		// ss << " " << vec.size();
+		// for (size_t i = 0; i < vec.size(); ++i)
+		// 		ss << ' ' << vec[i];
+		// // _time = 0;
+		// std::cout << ss.str();
 	// }
 
 
