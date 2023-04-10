@@ -80,6 +80,7 @@ namespace ft
 
 			vector(const vector &other): _size(0),  _capacity(0), _alloc(other._alloc)
 			{
+				reserve(other.capacity());
 				while (this->_size != other._size)
 					push_back(other[this->_size]);
 			}
