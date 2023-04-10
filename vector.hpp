@@ -432,6 +432,8 @@ namespace ft
 			template <class InputIterator>
 			void insert_dispatch(iterator position, InputIterator first, InputIterator last, std::forward_iterator_tag)
 			{
+				value_type copy = *first;
+				std::cout << "Do you reach here?\n";
 				size_t offset = position - begin();
 				size_t n = ft::distance(first, last);
 				if (n + size() > _capacity)
@@ -478,7 +480,6 @@ namespace ft
 						offset++;
 					}
 					_size += n;
-							
 				}
 				else
 				{
@@ -486,12 +487,10 @@ namespace ft
 					while (first != last)
 					{
 						// std::cout << ": " << std::endl;
-						// try
-						// {
 							value_type copy = *(first++);
-							// std::cout << "Hereeeeeee\n";
 							_alloc.construct(_arr + _size, copy);
 							_size++;
+							// std::cout << "Hereeeeeee\n";
 						// }
 						// catch(...)
 						// {

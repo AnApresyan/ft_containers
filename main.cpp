@@ -131,17 +131,73 @@
 #include "vector.hpp"
 #include "stack.hpp"
 
+    class	B
+	{
+		public:
+			char	*l;
+			int		i;
+
+			B() : l(NULL), i(1) {};
+			B(const int &ex)
+			{
+				this->i = ex;
+				this->l = new char('a');
+			};
+			virtual ~B()
+			{
+				delete this->l;
+				this->l = NULL;
+			};
+	};
+
+	class A : public B
+	{
+		public:
+			A() : B() {};
+			A(const B* ex)
+			{
+				this->l = new char(*(ex->l));
+				this->i = ex->i;
+				if (ex->i == -1) throw "n";
+			}
+			~A()
+			{
+				delete this->l;
+				this->l = NULL;
+			};
+	};
 
 int main()
-{
-    for (int i = 0; i < 2; ++i) {
-        ft::vector<int> v;
 
-        for (std::size_t i = 0; i < 10000; ++i) {
-            std::cout << i << " ";
-            v.insert(v.end(), i, rand());
-        }
-    }
+        std::unique_ptr<B> k2(new B(3));
+		std::unique_ptr<B> k3(new B(4));
+		std::unique_ptr<B> k4(new B(-1));
+
+		ft::vector<A>	vv;
+		ft::vector<B*>	v1;
+
+		v1.push_back(&(*k2));
+		v1.push_back(&(*k3));
+		v1.push_back(&(*k4));
+		// std::cout << "Starting try\n";
+		try
+		{
+			vv.insert(vv.begin(), v1.begin(), v1.end());
+		}
+		catch (...)
+		{
+			ss << " " << (vv.size());
+			ss << " " << (vv.capacity());
+		}
+{
+    // for (int i = 0; i < 2; ++i) {
+    //     ft::vector<int> v;
+
+    //     for (std::size_t i = 0; i < 10000; ++i) {
+    //         std::cout << i << " ";
+    //         v.insert(v.end(), i, rand());
+    //     }
+    // }
 	//Volodya's tester
 	// const std::string       vec_example17(double &_time)
 	// {
