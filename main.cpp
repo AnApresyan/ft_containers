@@ -145,8 +145,12 @@
 			};
 			virtual ~B()
 			{
+                std::cout << "Destroying B\n";
+                // std::cout << "Destroying member " << &l << std::endl; 
 				delete this->l;
 				this->l = NULL;
+                std::cout << "Done Destroying B\n";
+
 			};
 	};
 
@@ -162,13 +166,17 @@
 			}
 			~A()
 			{
-				delete this->l;
-				this->l = NULL;
+                std::cout << "Destroying A\n";
+                // std::cout << "Destroying member " << &l << std::endl;
+                    delete this->l;
+                    this->l = NULL;
+                std::cout << "Done Destroying A\n";
+
 			};
 	};
 
 int main()
-
+{
         std::unique_ptr<B> k2(new B(3));
 		std::unique_ptr<B> k3(new B(4));
 		std::unique_ptr<B> k4(new B(-1));
@@ -180,16 +188,24 @@ int main()
 		v1.push_back(&(*k3));
 		v1.push_back(&(*k4));
 		// std::cout << "Starting try\n";
+
+		// std::cout << "The address of vv: " << &vv << std::endl;
+        // std::cout << "The address of v1: " << &v1 << std::endl;
+        // std::cout << "The address of k2: " << &(*k2) << std::endl;
+        // std::cout << "The address of k3: " << &(*k3) << std::endl;
+        // std::cout << "The address of k4: " << &(*k4) << std::endl;
+        // std::cout << "The address of v1: " << &v1 << std::endl;
+        
 		try
 		{
-			vv.insert(vv.begin(), v1.begin(), v1.end());
+			vv.insert(vv.begin(), v1.begin(), v1.end());    
 		}
 		catch (...)
 		{
-			ss << " " << (vv.size());
-			ss << " " << (vv.capacity());
+            std::cout << "Reach here?\n";
+			std::cout << " " << (vv.size());
+			std::cout << " " << (vv.capacity());
 		}
-{
     // for (int i = 0; i < 2; ++i) {
     //     ft::vector<int> v;
 
