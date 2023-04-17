@@ -87,9 +87,9 @@ namespace ft
 
 			~vector() 
 			{
-				std::cout << "In the destructor\n";
-				std::cout << "Size: " << _size << std::endl;
-				std::cout << "Capacity: " << _capacity << std::endl;
+				//std::cout << "In the destructor\n";
+				//std::cout << "Size: " << _size << std::endl;
+				//std::cout << "Capacity: " << _capacity << std::endl;
 				clear_deallocate();
 			}
 
@@ -178,12 +178,12 @@ namespace ft
 						temp = _alloc.allocate(n);
 						for (i = 0; i < _size; i++)
 						{	_alloc.construct(temp + i, _arr[i]);
-							// std::cout << "Enters?\n";
+							// //std::cout << "Enters?\n";
 							_alloc.destroy(_arr + i);
 						}
 						if (_capacity > 0)
 							_alloc.deallocate(_arr, _capacity);
-						// std::cout << "reached here\n\n\n\n";
+						// //std::cout << "reached here\n\n\n\n";
 						_capacity = n;
 						_arr = temp;
 					}
@@ -315,9 +315,9 @@ namespace ft
 				}
 				else if (_size == _capacity)
 					reserve(_capacity * 2);
-				// std::cout << "Also here\n";
+				// //std::cout << "Also here\n";
 				_alloc.construct(_arr + _size, copy);
-				// std::cout << "Pushed " << (_arr + _size) << std::endl;
+				// //std::cout << "Pushed " << (_arr + _size) << std::endl;
 				_size++;
 			}
 
@@ -336,27 +336,27 @@ namespace ft
 					return this->begin();
 				if (offset == _size - 1)
 					return begin() + offset;
-				// std::cout << "Position: " << position.base() << std::endl;
+				// //std::cout << "Position: " << position.base() << std::endl;
 				for (iterator it = end() - 1; it != position; it--)
 				{
-					// std::cout << it.base() << std::endl;
+					// //std::cout << it.base() << std::endl;
 					*it = *(it - 1);
 				}
-				// std::cout << "HEREEEE\n";
+				// //std::cout << "HEREEEE\n";
 				*position = copy;
 				return begin() + offset;
     		}
 
 			void insert(iterator position, size_type n, const T& val)
 			{
-				// std::cout << "Should be here\n";
+				// //std::cout << "Should be here\n";
 				if (n + size() > max_size())
 					throw std::length_error("More than the max size.");
 				value_type copy = val;
 				size_t offset = position - begin();
 				if (size() + n > _capacity)
 				{
-					// std::cout << "Here\n";
+					// //std::cout << "Here\n";
 					// reserve(size() + n);
 					if (size() + n > 2*size())
 						reserve(size() + n);
@@ -401,8 +401,8 @@ namespace ft
 				}
 				else
 				{
-					// std::cout << "Hopefully here\n";
-					// std::cout << "n: " << n << std::endl;
+					// //std::cout << "Hopefully here\n";
+					// //std::cout << "n: " << n << std::endl;
 					while (n-- > 0)
 					{
 						_alloc.construct(_arr + _size, copy);
@@ -449,7 +449,7 @@ namespace ft
 					else
 						reserve(size() * 2);
 				}
-				// std::cout << "Capacity " << _capacity << std::endl;
+				// //std::cout << "Capacity " << _capacity << std::endl;
 				position = begin() + offset;
 				size_t shifted = end() - position - 1;
 				if (position != end())
@@ -480,40 +480,40 @@ namespace ft
 					}
 					while (first != last)
 					{
-						value_type copy = *(first++);
-						_alloc.construct(_arr + offset, copy);
+						// value_type copy = *(first++);
+						_alloc.construct(_arr + offset, *(first++));
 						offset++;
 					}
 					_size += n;
 				}
 				else
 				{
-					// std::cout << "here?\n";
-					value_type copy;
+					// //std::cout << "here?\n";
+					// value_type copy;
 					while (first != last)
 					{
-						// std::cout << "\n\n\nHEREEEE?" << std::endl;
+						// //std::cout << "\n\n\nHEREEEE?" << std::endl;
 
-						// std::cout << ": " << std::endl;
+						// //std::cout << ": " << std::endl;
 							// try
 							// {
 							// 	// copy = *first;
-							// 	std::cout << "Axpor pes eli\n";
+							// 	//std::cout << "Axpor pes eli\n";
 							// }
 							// catch(const std::exception& e)
 							// {
-							// 	std::cout << "CAUGHT\n";
-							// 	std::cout << "Size in the catch block: " << _size << std::endl;
+							// 	//std::cout << "CAUGHT\n";
+							// 	//std::cout << "Size in the catch block: " << _size << std::endl;
 							// 	throw e;
 							// }
-							// std::cout << "Do you reach here?\n";
+							// //std::cout << "Do you reach here?\n";
 							try
 							{
 								 
-								// std::cout << "HERE?\n";
-								copy = static_cast<value_type>(*first);
-								_alloc.construct(_arr + _size, copy);
-								// std::cout << "Construction done\n";
+								// //std::cout << "HERE?\n";
+								// copy = static_cast<value_type>(*first);
+								_alloc.construct(_arr + _size, *first);
+								// //std::cout << "Construction done\n";
 								_size++;
 								first++;
 
@@ -521,35 +521,35 @@ namespace ft
 							catch(...)
 							{
 								
-								// std::cout << "AAAAAAAAAAAA\n";
+								// //std::cout << "AAAAAAAAAAAA\n";
 
-								// std::cout << "Size: " << _size << std::endl;
-								// std::cout << "Capacity: " << _capacity << std::endl;
+								// //std::cout << "Size: " << _size << std::endl;
+								// //std::cout << "Capacity: " << _capacity << std::endl;
 								clear_deallocate();
-								// std::cout << "Here?\n";
+								// //std::cout << "Here?\n";
 								throw ;
 							}
 
 								
 							
 
-							// std::cout << "HM\n";
-							// std::cout << "Size: " << _size << std::endl;
-							// std::cout << "Capacity: " << _capacity << std::endl;
+							// //std::cout << "HM\n";
+							// //std::cout << "Size: " << _size << std::endl;
+							// //std::cout << "Capacity: " << _capacity << std::endl;
 
 							// if (first != last)
-							// 	std::cout << "Moving to the next\n";
-							// std::cout << "Hereeeeeee\n";
+							// 	//std::cout << "Moving to the next\n";
+							// //std::cout << "Hereeeeeee\n";
 						// }
 						// catch(...)
 						// {
 						// 	// clear();
-						// 	std::cout << "Capacity: " << capacity() << std::endl;
+						// 	//std::cout << "Capacity: " << capacity() << std::endl;
 						// 	throw ;
 						// }
 						
 					}
-						std::cout << "AFTER ELSE\n";
+						//std::cout << "AFTER ELSE\n";
 						// push_back(*(first++));
 				}
 			}
@@ -578,7 +578,7 @@ namespace ft
 				_size -= count;
 				while (count-- > 0)
 				{
-					// std::cout << "Destroying " << _alloc.address(*first) << std::endl;
+					// //std::cout << "Destroying " << _alloc.address(*first) << std::endl;
 					_alloc.destroy(_alloc.address(*(first++)));
 				}
 				return (begin() + ret);
@@ -597,12 +597,13 @@ namespace ft
 			void clear_deallocate()
 			{
 				clear();
-				// std::cout << "HMMMMM\n";
+				// //std::cout << "HMMMMM\n";
 				if (_capacity > 0)
 				{
-					// std::cout << "Here\n";
+					// //std::cout << "Here\n";
 					this->_alloc.deallocate(_arr, capacity());
-					// std::cout << "VVVVVV\n";
+					_capacity = 0;
+					// //std::cout << "VVVVVV\n";
 				}
 			}
 
