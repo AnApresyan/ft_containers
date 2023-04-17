@@ -64,8 +64,6 @@ namespace ft
 			}
 			random_access_iterator operator-(difference_type n) const
 			{
-				// iterator tmp(*this);
-				// tmp.ptr += n;
 				return ft::random_access_iterator<T>(ptr - n);
 			}
 

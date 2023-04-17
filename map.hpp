@@ -2,7 +2,6 @@
 # define MAP_HPP
 
 #include "rb_tree.hpp"
-// #include 
 
 namespace ft
 {
@@ -19,7 +18,7 @@ namespace ft
 				friend class map;
 				protected:
 				Compare comp;
-				value_compare (Compare c) : comp(c) {}  // constructed with map's comparison object
+				value_compare (Compare c) : comp(c) {}
 				public:
 				typedef bool result_type;
 				typedef value_type first_argument_type;
@@ -31,7 +30,7 @@ namespace ft
 			};
 			typedef Alloc 									allocator_type;
 			
-		private:		//again taken from Alex, I have to understand this rebind thing
+		private:
 			typedef typename Alloc::template rebind<value_type>::other	pair_allocator_type;
 			typedef rb_tree<key_type, value_type, select_1st<value_type>, key_compare, pair_allocator_type>	tree;
 
@@ -147,8 +146,6 @@ namespace ft
 					throw std::out_of_range("Key not found");
 				return it->second;
 			}
-
-			//don't I need at?
 
 			//modifiers
 			pair<iterator,bool> insert (const value_type& val)
